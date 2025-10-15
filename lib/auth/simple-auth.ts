@@ -1,64 +1,93 @@
 // Simple authentication system for Campus Study Hub
-// Uses email-based sessions (can be enhanced with proper auth later)
+// Uses PostgreSQL with bcrypt for password hashing
 
-import type { User } from "../types"
-
-// In-memory user store (replace with database)
-const users = new Map<string, User & { password?: string }>()
+import bcrypt from "bcryptjs";
+import { query, queryOne } from "../db";
+import type { User } from "../types";
 
 export async function signIn(email: string, password: string): Promise<User> {
   // Simple email validation
   if (!email.endsWith(".edu")) {
-    throw new Error("Must use a .edu email address")
+    throw new Error("Must use a .edu email address");
   }
 
-  const user = Array.from(users.values()).find((u) => u.email === email)
+  const user = await queryOne<any>("SELECT * FROM users WHERE email = $1", [
+    email,
+  ]);
 
   if (!user) {
-    throw new Error("Account not found. Please sign up first.")
+    throw new Error("Account not found. Please sign up first.");
   }
 
-  if (user.password && user.password !== password) {
-    throw new Error("Incorrect password. Please try again.")
+  const isValidPassword = await bcrypt.compare(password, user.password_hash);
+  if (!isValidPassword) {
+    throw new Error("Incorrect password. Please try again.");
   }
 
   return {
     id: user.id,
     email: user.email,
     name: user.name,
-    createdAt: user.createdAt,
-  }
+    createdAt: new Date(user.created_at),
+  };
 }
 
-export async function signUp(email: string, name: string, password: string): Promise<User> {
+export async function signUp(
+  email: string,
+  name: string,
+  password: string
+): Promise<User> {
   if (!email.endsWith(".edu")) {
-    throw new Error("Must use a .edu email address")
+    throw new Error("Must use a .edu email address");
   }
 
-  const existingUser = Array.from(users.values()).find((u) => u.email === email)
+  const existingUser = await queryOne<any>(
+    "SELECT * FROM users WHERE email = $1",
+    [email]
+  );
+
   if (existingUser) {
-    throw new Error("Account already exists. Please sign in instead.")
+    throw new Error("Account already exists. Please sign in instead.");
   }
 
-  const user = {
-    id: crypto.randomUUID(),
-    email,
-    name,
-    password,
-    createdAt: new Date(),
+  // Hash password
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  const user = await queryOne<any>(
+    `INSERT INTO users (email, name, password_hash)
+     VALUES ($1, $2, $3)
+     RETURNING id, email, name, created_at`,
+    [email, name, passwordHash]
+  );
+
+  if (!user) {
+    throw new Error("Failed to create user");
   }
-  users.set(user.id, user)
 
   return {
     id: user.id,
     email: user.email,
     name: user.name,
-    createdAt: user.createdAt,
-  }
+    createdAt: new Date(user.created_at),
+  };
 }
 
 export async function getCurrentUser(userId: string): Promise<User | null> {
-  return users.get(userId) || null
+  const user = await queryOne<any>(
+    "SELECT id, email, name, created_at FROM users WHERE id = $1",
+    [userId]
+  );
+
+  if (!user) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    createdAt: new Date(user.created_at),
+  };
 }
 
 export async function signOut(): Promise<void> {

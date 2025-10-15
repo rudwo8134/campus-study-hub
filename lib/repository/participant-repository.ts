@@ -1,80 +1,185 @@
 // Repository for managing session participants and join requests
-import type { BaseRepository } from "./base-repository"
-import type { SessionParticipant } from "../types"
+import { query, queryOne } from "../db";
+import type { BaseRepository } from "./base-repository";
+import type { SessionParticipant, User } from "../types";
 
-export interface IParticipantRepository extends BaseRepository<SessionParticipant> {
-  findBySessionId(sessionId: string): Promise<SessionParticipant[]>
-  findByUserId(userId: string): Promise<SessionParticipant[]>
-  findPendingRequests(sessionId: string): Promise<SessionParticipant[]>
-  updateStatus(id: string, status: "approved" | "rejected"): Promise<SessionParticipant>
+export interface IParticipantRepository
+  extends BaseRepository<SessionParticipant> {
+  findBySessionId(sessionId: string): Promise<SessionParticipant[]>;
+  findByUserId(userId: string): Promise<SessionParticipant[]>;
+  findPendingRequests(sessionId: string): Promise<SessionParticipant[]>;
+  updateStatus(
+    id: string,
+    status: "approved" | "rejected"
+  ): Promise<SessionParticipant>;
 }
 
-export class InMemoryParticipantRepository implements IParticipantRepository {
-  private participants: Map<string, SessionParticipant> = new Map()
-
+export class PostgreSQLParticipantRepository implements IParticipantRepository {
   async findById(id: string): Promise<SessionParticipant | null> {
-    return this.participants.get(id) || null
+    const row = await queryOne<any>(
+      `SELECT p.*,
+              u.id as user_id, u.email as user_email, u.name as user_name, u.created_at as user_created_at
+       FROM session_participants p
+       LEFT JOIN users u ON p.user_id = u.id
+       WHERE p.id = $1`,
+      [id]
+    );
+
+    return row ? this.mapRowToParticipant(row) : null;
   }
 
   async findAll(): Promise<SessionParticipant[]> {
-    return Array.from(this.participants.values())
+    const rows = await query<any>(
+      `SELECT p.*,
+              u.id as user_id, u.email as user_email, u.name as user_name, u.created_at as user_created_at
+       FROM session_participants p
+       LEFT JOIN users u ON p.user_id = u.id
+       ORDER BY p.requested_at DESC`
+    );
+
+    return rows.map((row) => this.mapRowToParticipant(row));
   }
 
-  async create(data: Omit<SessionParticipant, "id" | "requestedAt">): Promise<SessionParticipant> {
-    const participant: SessionParticipant = {
-      ...data,
-      id: crypto.randomUUID(),
-      requestedAt: new Date(),
-      status: "pending",
+  async create(
+    data: Omit<SessionParticipant, "id" | "requestedAt">
+  ): Promise<SessionParticipant> {
+    const row = await queryOne<any>(
+      `INSERT INTO session_participants 
+       (session_id, user_id, status)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [data.sessionId, data.userId, data.status || "pending"]
+    );
+
+    if (!row) throw new Error("Failed to create participant");
+    return this.mapRowToParticipant(row);
+  }
+
+  async update(
+    id: string,
+    data: Partial<SessionParticipant>
+  ): Promise<SessionParticipant> {
+    const updates: string[] = [];
+    const values: any[] = [];
+    let paramIndex = 1;
+
+    if (data.status !== undefined) {
+      updates.push(`status = $${paramIndex++}`);
+      values.push(data.status);
     }
-    this.participants.set(participant.id, participant)
-    return participant
-  }
+    if (data.respondedAt !== undefined) {
+      updates.push(`responded_at = $${paramIndex++}`);
+      values.push(data.respondedAt);
+    }
 
-  async update(id: string, data: Partial<SessionParticipant>): Promise<SessionParticipant> {
-    const existing = this.participants.get(id)
-    if (!existing) throw new Error("Participant not found")
+    if (updates.length === 0) {
+      throw new Error("No fields to update");
+    }
 
-    const updated = { ...existing, ...data }
-    this.participants.set(id, updated)
-    return updated
+    values.push(id);
+    const row = await queryOne<any>(
+      `UPDATE session_participants 
+       SET ${updates.join(", ")}
+       WHERE id = $${paramIndex}
+       RETURNING *`,
+      values
+    );
+
+    if (!row) throw new Error("Participant not found");
+    return this.mapRowToParticipant(row);
   }
 
   async delete(id: string): Promise<void> {
-    this.participants.delete(id)
+    await query("DELETE FROM session_participants WHERE id = $1", [id]);
   }
 
   async findBySessionId(sessionId: string): Promise<SessionParticipant[]> {
-    return Array.from(this.participants.values()).filter((p) => p.sessionId === sessionId)
+    const rows = await query<any>(
+      `SELECT p.*,
+              u.id as user_id, u.email as user_email, u.name as user_name, u.created_at as user_created_at
+       FROM session_participants p
+       LEFT JOIN users u ON p.user_id = u.id
+       WHERE p.session_id = $1
+       ORDER BY p.requested_at DESC`,
+      [sessionId]
+    );
+
+    return rows.map((row) => this.mapRowToParticipant(row));
   }
 
   async findByUserId(userId: string): Promise<SessionParticipant[]> {
-    return Array.from(this.participants.values()).filter((p) => p.userId === userId)
+    const rows = await query<any>(
+      `SELECT p.*,
+              u.id as user_id, u.email as user_email, u.name as user_name, u.created_at as user_created_at
+       FROM session_participants p
+       LEFT JOIN users u ON p.user_id = u.id
+       WHERE p.user_id = $1
+       ORDER BY p.requested_at DESC`,
+      [userId]
+    );
+
+    return rows.map((row) => this.mapRowToParticipant(row));
   }
 
   async findPendingRequests(sessionId: string): Promise<SessionParticipant[]> {
-    return Array.from(this.participants.values()).filter((p) => p.sessionId === sessionId && p.status === "pending")
+    const rows = await query<any>(
+      `SELECT p.*,
+              u.id as user_id, u.email as user_email, u.name as user_name, u.created_at as user_created_at
+       FROM session_participants p
+       LEFT JOIN users u ON p.user_id = u.id
+       WHERE p.session_id = $1 AND p.status = 'pending'
+       ORDER BY p.requested_at ASC`,
+      [sessionId]
+    );
+
+    return rows.map((row) => this.mapRowToParticipant(row));
   }
 
-  async updateStatus(id: string, status: "approved" | "rejected"): Promise<SessionParticipant> {
-    const existing = this.participants.get(id)
-    if (!existing) throw new Error("Participant not found")
+  async updateStatus(
+    id: string,
+    status: "approved" | "rejected"
+  ): Promise<SessionParticipant> {
+    const row = await queryOne<any>(
+      `UPDATE session_participants 
+       SET status = $1, responded_at = CURRENT_TIMESTAMP
+       WHERE id = $2
+       RETURNING *`,
+      [status, id]
+    );
 
-    const updated = {
-      ...existing,
-      status,
-      respondedAt: new Date(),
+    if (!row) throw new Error("Participant not found");
+    return this.mapRowToParticipant(row);
+  }
+
+  private mapRowToParticipant(row: any): SessionParticipant {
+    const participant: SessionParticipant = {
+      id: row.id,
+      sessionId: row.session_id,
+      userId: row.user_id,
+      status: row.status,
+      requestedAt: new Date(row.requested_at),
+      respondedAt: row.responded_at ? new Date(row.responded_at) : undefined,
+    };
+
+    // Add user information if available
+    if (row.user_email) {
+      participant.user = {
+        id: row.user_id,
+        email: row.user_email,
+        name: row.user_name,
+        createdAt: new Date(row.user_created_at),
+      };
     }
-    this.participants.set(id, updated)
-    return updated
+
+    return participant;
   }
 }
 
-let participantRepository: IParticipantRepository | null = null
+let participantRepository: IParticipantRepository | null = null;
 
 export function getParticipantRepository(): IParticipantRepository {
   if (!participantRepository) {
-    participantRepository = new InMemoryParticipantRepository()
+    participantRepository = new PostgreSQLParticipantRepository();
   }
-  return participantRepository
+  return participantRepository;
 }

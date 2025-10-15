@@ -29,8 +29,9 @@ A study group matching and management platform for campus students. Find and joi
 
 - **Runtime**: Node.js
 - **API**: Next.js API Routes
-- **Database**: PostgreSQL (ready for integration)
-- **Authentication**: Cookie-based session
+- **Database**: PostgreSQL (✅ Implemented)
+- **Authentication**: Cookie-based session with bcrypt password hashing
+- **ORM**: Native pg library with custom query helpers
 
 ### Architecture Patterns
 
@@ -98,15 +99,22 @@ pnpm install
 npm install
 ```
 
-3. Set up environment variables (optional)
+3. Set up environment variables
 
 ```bash
 # Create .env.local file
-# DATABASE_URL=postgresql://user:password@localhost:5432/campus_study_hub
-# GOOGLE_MAPS_API_KEY=your_api_key_here
+POSTGRES_URL=your_postgres_connection_string
+DATABASE_URL=your_postgres_connection_string
+# GOOGLE_MAPS_API_KEY=your_api_key_here (optional)
 ```
 
-4. Run the development server
+4. Initialize the database
+
+```bash
+pnpm db:init
+```
+
+5. Run the development server
 
 ```bash
 pnpm dev
@@ -114,25 +122,22 @@ pnpm dev
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-### Database Setup (for Production)
+### Database Management
 
-To use PostgreSQL database:
+The project uses PostgreSQL for data persistence. The database is already configured and includes:
 
-```bash
-# Connect to PostgreSQL
-psql -U postgres
+- **Automatic Schema Setup**: Run `pnpm db:init` to create tables, indexes, and triggers
+- **Seed Data**: Sample users and study sessions for testing
+- **Migrations**: Add password field with `pnpm tsx scripts/add-password-field.ts`
 
-# Create database
-CREATE DATABASE campus_study_hub;
+Database features:
 
-# Run schema
-\i scripts/001-create-schema.sql
-
-# Insert seed data (optional)
-\i scripts/002-seed-data.sql
-```
+- UUID primary keys for all tables
+- Automatic timestamp updates via triggers
+- Foreign key constraints with cascading deletes
+- Indexed fields for optimized queries
 
 ## 📝 Key Components & Libraries
 
@@ -213,13 +218,15 @@ For production, consider:
 
 ## 🗺️ Roadmap
 
-- [ ] PostgreSQL database integration
+- [x] PostgreSQL database integration
 - [ ] Enhanced real-time map view (Google Maps/Mapbox)
 - [ ] Push notifications (for approval/rejection)
 - [ ] Chat functionality
 - [ ] Session reviews and ratings
 - [ ] Calendar integration
 - [ ] Mobile app (React Native)
+- [ ] Email verification for new users
+- [ ] OAuth integration (Google, GitHub)
 
 ## 🤝 Contributing
 

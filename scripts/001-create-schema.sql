@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email VARCHAR(255) UNIQUE NOT NULL,
   name VARCHAR(255) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -43,7 +44,8 @@ CREATE TABLE IF NOT EXISTS session_participants (
 CREATE INDEX IF NOT EXISTS idx_sessions_host ON study_sessions(host_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_date ON study_sessions(date);
 CREATE INDEX IF NOT EXISTS idx_sessions_subject ON study_sessions(subject);
-CREATE INDEX IF NOT EXISTS idx_sessions_location ON study_sessions USING gist(ll_to_earth(latitude, longitude));
+CREATE INDEX IF NOT EXISTS idx_sessions_latitude ON study_sessions(latitude);
+CREATE INDEX IF NOT EXISTS idx_sessions_longitude ON study_sessions(longitude);
 CREATE INDEX IF NOT EXISTS idx_participants_session ON session_participants(session_id);
 CREATE INDEX IF NOT EXISTS idx_participants_user ON session_participants(user_id);
 CREATE INDEX IF NOT EXISTS idx_participants_status ON session_participants(status);
