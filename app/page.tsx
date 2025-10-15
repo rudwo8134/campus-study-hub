@@ -1,13 +1,20 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { BookOpen, MapPin, Users, Calendar } from "lucide-react"
-import { cookies } from "next/headers"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { BookOpen, MapPin, Users, Calendar } from "lucide-react";
+import { cookies } from "next/headers";
+import { LogoutButton } from "@/components/logout-button";
 
 export default async function HomePage() {
-  const cookieStore = await cookies()
-  const userId = cookieStore.get("userId")?.value
-  const isLoggedIn = !!userId
+  const cookieStore = await cookies();
+  const userId = cookieStore.get("userId")?.value;
+  const isLoggedIn = !!userId;
 
   return (
     <div className="min-h-screen bg-background">
@@ -31,6 +38,7 @@ export default async function HomePage() {
                   <Link href="/create">
                     <Button>Create Session</Button>
                   </Link>
+                  <LogoutButton />
                 </>
               ) : (
                 <>
@@ -50,10 +58,13 @@ export default async function HomePage() {
       {/* Hero Section */}
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4 text-balance">Find Your Study Group</h2>
+          <h2 className="text-4xl font-bold mb-4 text-balance">
+            Find Your Study Group
+          </h2>
           <p className="text-lg text-muted-foreground text-pretty leading-relaxed">
-            Connect with peers, create study sessions, and discover groups by subject and location. Make studying more
-            effective and collaborative.
+            Connect with peers, create study sessions, and discover groups by
+            subject and location. Make studying more effective and
+            collaborative.
           </p>
           <div className="flex gap-4 justify-center mt-8">
             {isLoggedIn ? (
@@ -90,7 +101,9 @@ export default async function HomePage() {
               <CardTitle>By Subject</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Find study groups for your specific courses and topics</CardDescription>
+              <CardDescription>
+                Find study groups for your specific courses and topics
+              </CardDescription>
             </CardContent>
           </Card>
 
@@ -100,7 +113,9 @@ export default async function HomePage() {
               <CardTitle>Nearby</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Discover sessions close to you with map and list views</CardDescription>
+              <CardDescription>
+                Discover sessions close to you with map and list views
+              </CardDescription>
             </CardContent>
           </Card>
 
@@ -110,7 +125,9 @@ export default async function HomePage() {
               <CardTitle>Join Groups</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Request to join sessions and get approved by hosts</CardDescription>
+              <CardDescription>
+                Request to join sessions and get approved by hosts
+              </CardDescription>
             </CardContent>
           </Card>
 
@@ -120,11 +137,13 @@ export default async function HomePage() {
               <CardTitle>Schedule</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Plan ahead with date and time filters for your availability</CardDescription>
+              <CardDescription>
+                Plan ahead with date and time filters for your availability
+              </CardDescription>
             </CardContent>
           </Card>
         </div>
       </main>
     </div>
-  )
+  );
 }

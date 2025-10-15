@@ -1,8 +1,15 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Mail, Calendar } from "lucide-react"
-import Link from "next/link"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { LogoutButton } from "@/components/logout-button";
+import { Mail, Calendar } from "lucide-react";
+import Link from "next/link";
 
 export default function ProfilePage() {
   const user = {
@@ -10,13 +17,13 @@ export default function ProfilePage() {
     name: "Test Student",
     email: "test@university.edu",
     createdAt: new Date().toISOString(),
-  }
+  };
 
   const initials = user.name
     .split(" ")
     .map((n) => n[0])
     .join("")
-    .toUpperCase()
+    .toUpperCase();
 
   return (
     <div className="min-h-screen bg-background">
@@ -37,6 +44,7 @@ export default function ProfilePage() {
               <Link href="/create">
                 <Button variant="ghost">Create Session</Button>
               </Link>
+              <LogoutButton />
             </nav>
           </div>
         </div>
@@ -50,7 +58,9 @@ export default function ProfilePage() {
             <CardHeader>
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16">
-                  <AvatarFallback className="text-lg">{initials}</AvatarFallback>
+                  <AvatarFallback className="text-lg">
+                    {initials}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <CardTitle className="text-2xl">{user.name}</CardTitle>
@@ -78,7 +88,9 @@ export default function ProfilePage() {
                 <Calendar className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Member Since</p>
-                  <p className="text-sm text-muted-foreground">{new Date(user.createdAt).toLocaleDateString()}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(user.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -91,17 +103,26 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent className="space-y-2">
               <Link href="/my-sessions" className="block">
-                <Button variant="outline" className="w-full justify-start bg-transparent">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start bg-transparent"
+                >
                   View My Sessions
                 </Button>
               </Link>
               <Link href="/create" className="block">
-                <Button variant="outline" className="w-full justify-start bg-transparent">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start bg-transparent"
+                >
                   Create New Session
                 </Button>
               </Link>
               <Link href="/discover" className="block">
-                <Button variant="outline" className="w-full justify-start bg-transparent">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start bg-transparent"
+                >
                   Discover Sessions
                 </Button>
               </Link>
@@ -110,5 +131,5 @@ export default function ProfilePage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

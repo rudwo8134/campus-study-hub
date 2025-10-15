@@ -1,62 +1,73 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface AuthFormProps {
-  mode: "login" | "signup"
+  mode: "login" | "signup";
 }
 
 export function AuthForm({ mode }: AuthFormProps) {
-  const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [name, setName] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
-      const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/signup"
+      const endpoint =
+        mode === "login" ? "/api/auth/login" : "/api/auth/signup";
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, password }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Authentication failed")
+        throw new Error(data.error || "Authentication failed");
       }
 
       // Redirect to discover page after successful auth
-      router.push("/discover")
-      router.refresh()
+      router.push("/discover");
+      router.refresh();
     } catch (err) {
-      setError((err as Error).message)
+      setError((err as Error).message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>{mode === "login" ? "Welcome Back" : "Create Account"}</CardTitle>
+        <CardTitle>
+          {mode === "login" ? "Welcome Back" : "Create Account"}
+        </CardTitle>
         <CardDescription>
-          {mode === "login" ? "Sign in to access your study sessions" : "Join Campus Study Hub with your .edu email"}
+          {mode === "login"
+            ? "Sign in to access your study sessions"
+            : "Join Campus Study Hub and start studying together"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -76,16 +87,15 @@ export function AuthForm({ mode }: AuthFormProps) {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="email">University Email</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
-              placeholder="student@university.edu"
+              placeholder="your.email@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <p className="text-sm text-muted-foreground">Must be a .edu email address</p>
           </div>
 
           <div className="space-y-2">
@@ -93,7 +103,11 @@ export function AuthForm({ mode }: AuthFormProps) {
             <Input
               id="password"
               type="password"
-              placeholder={mode === "signup" ? "At least 6 characters" : "Enter your password"}
+              placeholder={
+                mode === "signup"
+                  ? "At least 6 characters"
+                  : "Enter your password"
+              }
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -108,10 +122,14 @@ export function AuthForm({ mode }: AuthFormProps) {
           )}
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Please wait..." : mode === "login" ? "Sign In" : "Sign Up"}
+            {loading
+              ? "Please wait..."
+              : mode === "login"
+              ? "Sign In"
+              : "Sign Up"}
           </Button>
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

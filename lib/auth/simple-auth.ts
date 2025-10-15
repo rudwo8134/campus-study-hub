@@ -6,9 +6,9 @@ import { query, queryOne } from "../db";
 import type { User } from "../types";
 
 export async function signIn(email: string, password: string): Promise<User> {
-  // Simple email validation
-  if (!email.endsWith(".edu")) {
-    throw new Error("Must use a .edu email address");
+  // Basic email validation
+  if (!email.includes("@")) {
+    throw new Error("Invalid email address");
   }
 
   const user = await queryOne<any>("SELECT * FROM users WHERE email = $1", [
@@ -37,8 +37,9 @@ export async function signUp(
   name: string,
   password: string
 ): Promise<User> {
-  if (!email.endsWith(".edu")) {
-    throw new Error("Must use a .edu email address");
+  // Basic email validation
+  if (!email.includes("@")) {
+    throw new Error("Invalid email address");
   }
 
   const existingUser = await queryOne<any>(
