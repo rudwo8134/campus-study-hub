@@ -1,45 +1,45 @@
 // TypeScript declarations for Google Maps API
 declare global {
   interface Window {
-    google: typeof google
+    google: typeof google;
   }
 }
 
 declare namespace google {
   namespace maps {
     class Map {
-      constructor(element: HTMLElement, options: MapOptions)
-      fitBounds(bounds: LatLngBounds): void
+      constructor(element: HTMLElement, options: MapOptions);
+      fitBounds(bounds: LatLngBounds): void;
     }
 
     class Marker {
-      constructor(options: MarkerOptions)
-      setMap(map: Map | null): void
-      addListener(event: string, handler: () => void): void
+      constructor(options: MarkerOptions);
+      setMap(map: Map | null): void;
+      addListener(event: string, handler: () => void): void;
     }
 
     class LatLngBounds {
-      constructor()
-      extend(point: LatLngLiteral): void
+      constructor();
+      extend(point: LatLngLiteral): void;
     }
 
     interface MapOptions {
-      center: LatLngLiteral
-      zoom: number
-      styles?: any[]
+      center: LatLngLiteral;
+      zoom: number;
+      styles?: any[];
     }
 
     interface MarkerOptions {
-      position: LatLngLiteral
-      map: Map
-      title?: string
+      position: LatLngLiteral;
+      map: Map;
+      title?: string;
     }
 
     interface LatLngLiteral {
-      lat: number
-      lng: number
+      lat: number;
+      lng: number;
     }
   }
 }
 
-export {}
+export {};
