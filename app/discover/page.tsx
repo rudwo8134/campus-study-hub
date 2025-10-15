@@ -1,106 +1,118 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { SessionFilters } from "@/components/session-filters"
-import { SessionList } from "@/components/session-list"
-import { SessionMap } from "@/components/session-map"
-import { ArrowLeft } from "lucide-react"
-import type { SessionSearchResult, SessionFilters as Filters } from "@/lib/types"
-import type { RankingType } from "@/lib/ranking/ranking-factory"
-import { useToast } from "@/hooks/use-toast"
-import { getSessionMediator } from "@/lib/mediator/session-mediator"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { SessionFilters } from "@/components/session-filters";
+import { SessionList } from "@/components/session-list";
+import { SessionMap } from "@/components/session-map";
+import { LogoutButton } from "@/components/logout-button";
+import { ArrowLeft } from "lucide-react";
+import type {
+  SessionSearchResult,
+  SessionFilters as Filters,
+} from "@/lib/types";
+import type { RankingType } from "@/lib/ranking/ranking-factory";
+import { useToast } from "@/hooks/use-toast";
+import { getSessionMediator } from "@/lib/mediator/session-mediator";
 
 export default function DiscoverPage() {
-  const [sessions, setSessions] = useState<SessionSearchResult[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const { toast } = useToast()
+  const [sessions, setSessions] = useState<SessionSearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
-    loadSessions({}, "relevance")
+    loadSessions({}, "relevance");
 
-    const mediator = getSessionMediator()
+    const mediator = getSessionMediator();
     mediator.registerComponent("discover-page", (event, data) => {
       if (event === "session:created" || event === "session:updated") {
-        loadSessions({}, "relevance")
+        loadSessions({}, "relevance");
       }
-    })
+    });
 
     return () => {
-      mediator.unregisterComponent("discover-page")
-    }
-  }, [])
+      mediator.unregisterComponent("discover-page");
+    };
+  }, []);
 
-  const loadSessions = async (filters: Filters, rankingType: RankingType = "relevance") => {
-    setIsLoading(true)
+  const loadSessions = async (
+    filters: Filters,
+    rankingType: RankingType = "relevance"
+  ) => {
+    setIsLoading(true);
     try {
       const response = await fetch("/api/sessions/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filters, rankingType }),
-      })
+      });
 
-      if (!response.ok) throw new Error("Failed to load sessions")
+      if (!response.ok) throw new Error("Failed to load sessions");
 
-      const data = await response.json()
-      setSessions(data)
+      const data = await response.json();
+      setSessions(data);
     } catch (error) {
-      console.error("[v0] Error loading sessions:", error)
+      console.error("[v0] Error loading sessions:", error);
       toast({
         title: "Error",
         description: "Failed to load study sessions",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleJoinRequest = async (sessionId: string) => {
     try {
       // Mock user ID (replace with actual auth)
-      const userId = "mock-user-id"
+      const userId = "mock-user-id";
 
       const response = await fetch("/api/participants", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId, userId }),
-      })
+      });
 
-      if (!response.ok) throw new Error("Failed to request join")
+      if (!response.ok) throw new Error("Failed to request join");
 
       toast({
         title: "Request Sent",
         description: "Your join request has been sent to the host",
-      })
+      });
 
-      const mediator = getSessionMediator()
-      mediator.notifyParticipantStatusChanged(sessionId, userId, "pending")
+      const mediator = getSessionMediator();
+      mediator.notifyParticipantStatusChanged(sessionId, userId, "pending");
     } catch (error) {
-      console.error("[v0] Error requesting to join:", error)
+      console.error("[v0] Error requesting to join:", error);
       toast({
         title: "Error",
         description: "Failed to send join request",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="icon">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold">Discover Study Sessions</h1>
-              <p className="text-sm text-muted-foreground">Find and join study groups near you</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link href="/">
+                <Button variant="ghost" size="icon">
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              </Link>
+              <div>
+                <h1 className="text-2xl font-bold">Discover Study Sessions</h1>
+                <p className="text-sm text-muted-foreground">
+                  Find and join study groups near you
+                </p>
+              </div>
             </div>
+            <LogoutButton />
           </div>
         </div>
       </header>
@@ -119,19 +131,26 @@ export default function DiscoverPage() {
             {/* Map Section */}
             <div className="w-full">
               <h2 className="text-lg font-semibold mb-3">Map View</h2>
-              <SessionMap sessions={sessions} onSessionClick={handleJoinRequest} />
+              <SessionMap
+                sessions={sessions}
+                onSessionClick={handleJoinRequest}
+              />
             </div>
 
             {/* List Section */}
             <div className="w-full">
-              <h2 className="text-lg font-semibold mb-3">Study Sessions ({sessions.length})</h2>
+              <h2 className="text-lg font-semibold mb-3">
+                Study Sessions ({sessions.length})
+              </h2>
               {isLoading ? (
                 <div className="text-center py-12 bg-card rounded-lg border">
                   <p className="text-muted-foreground">Loading sessions...</p>
                 </div>
               ) : sessions.length === 0 ? (
                 <div className="text-center py-12 bg-card rounded-lg border">
-                  <p className="text-muted-foreground mb-4">No study sessions found</p>
+                  <p className="text-muted-foreground mb-4">
+                    No study sessions found
+                  </p>
                   <p className="text-sm text-muted-foreground mb-4">
                     Try adjusting your filters or create a new session
                   </p>
@@ -140,12 +159,15 @@ export default function DiscoverPage() {
                   </Link>
                 </div>
               ) : (
-                <SessionList sessions={sessions} onJoinClick={handleJoinRequest} />
+                <SessionList
+                  sessions={sessions}
+                  onJoinClick={handleJoinRequest}
+                />
               )}
             </div>
           </div>
         </div>
       </main>
     </div>
-  )
+  );
 }
