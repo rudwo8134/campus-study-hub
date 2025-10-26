@@ -139,6 +139,64 @@ Database features:
 - Foreign key constraints with cascading deletes
 - Indexed fields for optimized queries
 
+## 📚 API Documentation
+
+### Swagger UI
+
+Interactive API documentation is available at `/api-docs` route.
+
+#### Access the API Docs
+
+1. Start the development server:
+
+```bash
+pnpm dev
+```
+
+2. Navigate to [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
+
+#### Features
+
+- **Interactive Testing**: Try out API endpoints directly from the documentation
+- **Request/Response Examples**: See example requests and responses for each endpoint
+- **Authentication**: Documentation includes cookie-based authentication details
+- **Auto-Discovery**: Server URL is automatically detected based on current environment
+
+#### API Endpoints
+
+**Authentication**
+
+- `POST /api/auth/signup` - Register a new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/me` - Get current user
+- `POST /api/auth/logout` - Logout user
+
+**Sessions**
+
+- `GET /api/sessions` - Get upcoming sessions
+- `POST /api/sessions` - Create a new session
+- `GET /api/sessions/search` - Search sessions
+- `GET /api/sessions/{id}` - Get session details
+- `DELETE /api/sessions/{id}` - Delete a session
+
+**Participants**
+
+- `POST /api/participants` - Request to join a session
+- `GET /api/participants/{id}` - Get participant details
+- `PATCH /api/participants/{id}` - Update participant status
+- `GET /api/sessions/{id}/participants` - Get session participants
+
+#### Configuration
+
+Swagger configuration is located in `lib/swagger.ts`. You can customize:
+
+- API information (title, version, description)
+- Server URLs (development/production)
+- Endpoint definitions
+- Request/response schemas
+
+**Note**: The API documentation uses Swagger UI loaded from CDN via iframe to ensure compatibility with Next.js 15 and React 19.
+
 ## 📝 Key Components & Libraries
 
 ### UI Components

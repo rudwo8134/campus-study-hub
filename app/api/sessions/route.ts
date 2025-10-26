@@ -1,35 +1,80 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { getSessionRepository } from "@/lib/repository/session-repository"
-import { getGeocodingProvider } from "@/lib/geocoding/geocoding-factory"
-import { getSessionMediator } from "@/lib/mediator/session-mediator"
-import type { StudySession } from "@/lib/types"
+import { type NextRequest, NextResponse } from "next/server";
+import { getSessionRepository } from "@/lib/repository/session-repository";
+import { getGeocodingProvider } from "@/lib/geocoding/geocoding-factory";
+import { getSessionMediator } from "@/lib/mediator/session-mediator";
+import type { StudySession } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
   try {
-    const sessionRepo = getSessionRepository()
-    const sessions = await sessionRepo.findUpcoming()
+    const sessionRepo = getSessionRepository();
+    const sessions = await sessionRepo.findUpcoming();
 
-    return NextResponse.json(sessions)
+    return NextResponse.json(sessions);
   } catch (error) {
-    console.error("[v0] Error fetching sessions:", error)
-    return NextResponse.json({ error: "Failed to fetch sessions" }, { status: 500 })
+    console.error("[v0] Error fetching sessions:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch sessions" },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { hostId, subject, tags, date, startTime, endTime, capacity, address, description } = body
+    const body = await request.json();
+    const {
+      hostId,
+      subject,
+      tags,
+      date,
+      startTime,
+      endTime,
+      capacity,
+      address,
+      description,
+    } = body;
 
     // Validate required fields
-    if (!hostId || !subject || !date || !startTime || !endTime || !capacity || !address) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    if (
+      !hostId ||
+      !subject ||
+      !date ||
+      !startTime ||
+      !endTime ||
+      !capacity ||
+      !address
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Missing required fields: hostId, subject, date, startTime, endTime, capacity, address",
+        },
+        { status: 400 }
+      );
     }
 
-    const geocodingProvider = getGeocodingProvider()
-    const location = await geocodingProvider.geocode(address)
+    // Validate UUID format
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(hostId)) {
+      return NextResponse.json(
+        { error: "Invalid hostId format. Must be a valid UUID." },
+        { status: 400 }
+      );
+    }
 
-    const sessionRepo = getSessionRepository()
+    // Validate capacity
+    if (typeof capacity !== "number" || capacity <= 0) {
+      return NextResponse.json(
+        { error: "Capacity must be a positive number" },
+        { status: 400 }
+      );
+    }
+
+    const geocodingProvider = getGeocodingProvider();
+    const location = await geocodingProvider.geocode(address);
+
+    const sessionRepo = getSessionRepository();
     const session = await sessionRepo.create({
       hostId,
       subject,
@@ -40,14 +85,31 @@ export async function POST(request: NextRequest) {
       capacity,
       location,
       description,
-    } as Omit<StudySession, "id" | "createdAt" | "updatedAt">)
+    } as Omit<StudySession, "id" | "createdAt" | "updatedAt">);
 
-    const mediator = getSessionMediator()
-    mediator.notifySessionCreated(session.id)
+    const mediator = getSessionMediator();
+    mediator.notifySessionCreated(session.id);
 
-    return NextResponse.json(session, { status: 201 })
+    return NextResponse.json(session, { status: 201 });
   } catch (error) {
-    console.error("[v0] Error creating session:", error)
-    return NextResponse.json({ error: "Failed to create session" }, { status: 500 })
+    console.error("[v0] Error creating session:", error);
+
+    // Check if it's a UUID validation error from PostgreSQL
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "22P02"
+    ) {
+      return NextResponse.json(
+        { error: "Invalid UUID format for hostId" },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Failed to create session" },
+      { status: 500 }
+    );
   }
 }
