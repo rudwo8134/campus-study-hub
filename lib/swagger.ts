@@ -25,6 +25,7 @@ export const swaggerConfig = {
       { name: "Authentication", description: "User authentication endpoints" },
       { name: "Sessions", description: "Study session management" },
       { name: "Participants", description: "Session participant management" },
+      { name: "Geocoding", description: "Address geocoding and location services" },
     ],
     paths: {
       "/api/auth/signup": {
@@ -605,6 +606,115 @@ export const swaggerConfig = {
                         userId: { type: "string" },
                         status: { type: "string" },
                         requestedAt: { type: "string" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/api/geocode": {
+        get: {
+          tags: ["Geocoding"],
+          summary: "Geocode an address",
+          description: "Convert an address to geographic coordinates using Google Maps Geocoding API",
+          parameters: [
+            {
+              name: "address",
+              in: "query",
+              required: true,
+              description: "Address to geocode",
+              schema: { type: "string" },
+              example: "Campus Library, Room 201",
+            },
+          ],
+          responses: {
+            "200": {
+              description: "Geocoding result",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      found: {
+                        type: "boolean",
+                        description: "Whether the address was found",
+                      },
+                      lat: {
+                        type: "number",
+                        description: "Latitude coordinate",
+                        example: 40.7128,
+                      },
+                      lng: {
+                        type: "number",
+                        description: "Longitude coordinate",
+                        example: -74.0060,
+                      },
+                      formattedAddress: {
+                        type: "string",
+                        description: "Formatted address from Google Maps",
+                        example: "Campus Library, Room 201, University Campus, City, State 12345",
+                      },
+                      placeId: {
+                        type: "string",
+                        description: "Google Places ID",
+                        example: "ChIJN1t_tDeuEmsRUsoyG83frY4",
+                      },
+                      status: {
+                        type: "string",
+                        description: "Status when address not found",
+                        example: "ZERO_RESULTS",
+                      },
+                    },
+                  },
+                  examples: {
+                    success: {
+                      value: {
+                        found: true,
+                        lat: 40.7128,
+                        lng: -74.0060,
+                        formattedAddress: "Campus Library, Room 201, University Campus, City, State 12345",
+                        placeId: "ChIJN1t_tDeuEmsRUsoyG83frY4",
+                      },
+                    },
+                    notFound: {
+                      value: {
+                        found: false,
+                        status: "ZERO_RESULTS",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            "400": {
+              description: "Bad request - missing address parameter",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      error: {
+                        type: "string",
+                        example: "missing address",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            "500": {
+              description: "Internal server error - missing API key",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      error: {
+                        type: "string",
+                        example: "missing api key",
                       },
                     },
                   },
