@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getSessionRepository } from "@/lib/repository/session-repository";
-import { getGeocodingProvider } from "@/lib/geocoding/geocoding-factory";
 import { getSessionMediator } from "@/lib/mediator/session-mediator";
 import type { StudySession } from "@/lib/types";
 
@@ -71,8 +70,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const geocodingProvider = getGeocodingProvider();
-    const location = await geocodingProvider.geocode(address);
+    // Geocode address using internal API
+    const baseUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const geocodeResponse = await fetch(
+      `${baseUrl}/api/geocode?address=${encodeURIComponent(address)}`
+    );
+
+    if (!geocodeResponse.ok) {
+      return NextResponse.json(
+        { error: "Failed to geocode address" },
+        { status: 500 }
+      );
+    }
+
+    const geocodeData = await geocodeResponse.json();
+
+    if (!geocodeData.found) {
+      return NextResponse.json(
+        { error: "Address not found. Please provide a valid address." },
+        { status: 400 }
+      );
+    }
+
+    const location = {
+      address: geocodeData.formattedAddress,
+      latitude: geocodeData.lat,
+      longitude: geocodeData.lng,
+      placeId: geocodeData.placeId,
+    };
 
     const sessionRepo = getSessionRepository();
     const session = await sessionRepo.create({
