@@ -1,56 +1,67 @@
-"use client"
+"use client";
 
-import type { SessionParticipant } from "@/lib/types"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Check, X, Clock } from "lucide-react"
+import type { SessionParticipant } from "@/lib/types";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Check, X, Clock } from "lucide-react";
 
 interface JoinRequestCardProps {
-  participant: SessionParticipant
-  onApprove?: (participantId: string) => void
-  onReject?: (participantId: string) => void
+  participant: SessionParticipant;
+  onApprove?: (participantId: string) => void;
+  onReject?: (participantId: string) => void;
 }
 
-export function JoinRequestCard({ participant, onApprove, onReject }: JoinRequestCardProps) {
+export function JoinRequestCard({
+  participant,
+  onApprove,
+  onReject,
+}: JoinRequestCardProps) {
   const getInitials = (name: string) => {
     return name
       .split(" ")
       .map((n) => n[0])
       .join("")
-      .toUpperCase()
-  }
+      .toUpperCase();
+  };
 
   const getStatusBadge = () => {
     switch (participant.status) {
       case "approved":
-        return <Badge className="bg-green-500">Approved</Badge>
+        return <Badge className="bg-green-500">Approved</Badge>;
       case "rejected":
-        return <Badge variant="destructive">Rejected</Badge>
+        return <Badge variant="destructive">Rejected</Badge>;
       case "pending":
         return (
           <Badge variant="secondary">
             <Clock className="h-3 w-3 mr-1" />
             Pending
           </Badge>
-        )
+        );
     }
-  }
+  };
 
   return (
-    <Card>
+    <Card className="border-primary/20 hover:border-primary/40 transition-all hover:shadow-md">
       <CardContent className="p-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-1">
-            <Avatar>
-              <AvatarFallback>{participant.user ? getInitials(participant.user.name) : "?"}</AvatarFallback>
+            <Avatar className="border-2 border-primary/20">
+              <AvatarFallback className="bg-primary/10 text-primary font-medium">
+                {participant.user ? getInitials(participant.user.name) : "?"}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <p className="font-medium">{participant.user?.name || "Unknown User"}</p>
-              <p className="text-sm text-muted-foreground">{participant.user?.email || "No email"}</p>
+              <p className="font-medium">
+                {participant.user?.name || "Unknown User"}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {participant.user?.email || "No email"}
+              </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Requested {new Date(participant.requestedAt).toLocaleDateString()}
+                Requested{" "}
+                {new Date(participant.requestedAt).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -59,11 +70,21 @@ export function JoinRequestCard({ participant, onApprove, onReject }: JoinReques
             {getStatusBadge()}
             {participant.status === "pending" && onApprove && onReject && (
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => onApprove(participant.id)}>
-                  <Check className="h-4 w-4" />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onApprove(participant.id)}
+                  className="border-green-500/50 hover:bg-green-500/10 hover:border-green-500 transition-all"
+                >
+                  <Check className="h-4 w-4 text-green-600" />
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => onReject(participant.id)}>
-                  <X className="h-4 w-4" />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onReject(participant.id)}
+                  className="border-red-500/50 hover:bg-red-500/10 hover:border-red-500 transition-all"
+                >
+                  <X className="h-4 w-4 text-red-600" />
                 </Button>
               </div>
             )}
@@ -71,5 +92,5 @@ export function JoinRequestCard({ participant, onApprove, onReject }: JoinReques
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

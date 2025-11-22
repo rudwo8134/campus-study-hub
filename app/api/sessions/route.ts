@@ -6,9 +6,35 @@ import type { StudySession } from "@/lib/types";
 export async function GET(request: NextRequest) {
   try {
     const sessionRepo = getSessionRepository();
-    const sessions = await sessionRepo.findUpcoming();
+    const { searchParams } = new URL(request.url);
+    const hostId = searchParams.get("hostId");
 
-    return NextResponse.json(sessions);
+    let sessions;
+    if (hostId) {
+      // Get sessions by host ID
+      sessions = await sessionRepo.findByHostId(hostId);
+    } else {
+      // Get all upcoming sessions
+      sessions = await sessionRepo.findUpcoming();
+    }
+
+    // Load participants for each session
+    const { getParticipantRepository } = await import(
+      "@/lib/repository/participant-repository"
+    );
+    const participantRepo = getParticipantRepository();
+
+    const sessionsWithParticipants = await Promise.all(
+      sessions.map(async (session) => {
+        const participants = await participantRepo.findBySessionId(session.id);
+        return {
+          ...session,
+          participants,
+        };
+      })
+    );
+
+    return NextResponse.json(sessionsWithParticipants);
   } catch (error) {
     console.error("[v0] Error fetching sessions:", error);
     return NextResponse.json(
