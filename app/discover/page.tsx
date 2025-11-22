@@ -239,6 +239,7 @@ export default function DiscoverPage() {
                   sessions={sessions}
                   onJoinClick={handleJoinRequest}
                   onCancelClick={handleCancelRequest}
+                  currentUserId={userId}
                 />
               )}
             </div>

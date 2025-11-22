@@ -50,6 +50,42 @@ export default function MySessionsPage() {
     }
   };
 
+  const handleDeleteSession = async (sessionId: string) => {
+    try {
+      const response = await fetch(`/api/sessions/${sessionId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete session");
+      }
+
+      toast({
+        title: "Session Deleted",
+        description: "The session has been successfully deleted",
+      });
+
+      // Reload sessions
+      fetch("/api/auth/me")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.user) {
+            loadMySessions(data.user.id);
+          }
+        })
+        .catch((err) => console.error("Failed to fetch user:", err));
+    } catch (error) {
+      console.error("[v0] Error deleting session:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to delete session",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 relative overflow-hidden">
       {/* Decorative animated elements */}
@@ -99,7 +135,10 @@ export default function MySessionsPage() {
           </div>
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom duration-700">
-            <MySessionsList sessions={sessions} />
+            <MySessionsList
+              sessions={sessions}
+              onDelete={handleDeleteSession}
+            />
           </div>
         )}
       </main>

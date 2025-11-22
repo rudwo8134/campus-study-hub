@@ -139,6 +139,9 @@ export class PostgreSQLSessionRepository implements ISessionRepository {
     const values: any[] = [];
     let paramIndex = 1;
 
+    // Always filter out past sessions (sessions before today)
+    conditions.push(`s.date >= CURRENT_DATE`);
+
     if (filters.subject) {
       conditions.push(`s.subject ILIKE $${paramIndex++}`);
       values.push(`%${filters.subject}%`);

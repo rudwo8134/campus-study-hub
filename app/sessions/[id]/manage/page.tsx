@@ -11,9 +11,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { JoinRequestCard } from "@/components/join-request-card";
-import { ArrowLeft, Users } from "lucide-react";
+import { ArrowLeft, Users, CheckCircle2 } from "lucide-react";
 import type { StudySession, SessionParticipant } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 export default function ManageSessionPage({
   params,
@@ -25,6 +26,17 @@ export default function ManageSessionPage({
   const [participants, setParticipants] = useState<SessionParticipant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+
+  // Helper function to check if session has passed
+  const isSessionPast = (session: StudySession): boolean => {
+    const sessionDate = new Date(session.date);
+    const [hours, minutes] = session.endTime.split(":").map(Number);
+    const endDateTime = new Date(sessionDate);
+    endDateTime.setHours(hours, minutes, 0, 0);
+
+    const now = new Date();
+    return endDateTime < now;
+  };
 
   useEffect(() => {
     loadSessionData();
@@ -134,6 +146,7 @@ export default function ManageSessionPage({
   const rejectedParticipants = participants.filter(
     (p) => p.status === "rejected"
   );
+  const isPast = session ? isSessionPast(session) : false;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 relative overflow-hidden">
@@ -168,9 +181,17 @@ export default function ManageSessionPage({
       <main className="container mx-auto px-4 py-6 max-w-4xl">
         <Card className="mb-6 animate-in fade-in slide-in-from-bottom duration-500 border-primary/20 hover:border-primary/40 transition-all">
           <CardHeader>
-            <CardTitle className="text-balance text-primary">
-              {session.subject}
-            </CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-balance text-primary">
+                {session.subject}
+              </CardTitle>
+              {isPast && (
+                <Badge className="bg-green-500/20 text-green-700 border-green-500/30">
+                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                  Completed
+                </Badge>
+              )}
+            </div>
             <CardDescription>
               {session.description || "No description"}
             </CardDescription>
@@ -189,6 +210,11 @@ export default function ManageSessionPage({
         <div className="mb-6 animate-in fade-in slide-in-from-bottom duration-700 delay-100">
           <h2 className="text-lg font-semibold mb-4 text-primary">
             Pending Requests ({pendingRequests.length})
+            {isPast && (
+              <span className="text-sm font-normal text-muted-foreground ml-2">
+                (Session completed - no actions available)
+              </span>
+            )}
           </h2>
           {pendingRequests.length === 0 ? (
             <Card className="border-primary/20">
@@ -206,8 +232,8 @@ export default function ManageSessionPage({
                 >
                   <JoinRequestCard
                     participant={participant}
-                    onApprove={handleApprove}
-                    onReject={handleReject}
+                    onApprove={isPast ? undefined : handleApprove}
+                    onReject={isPast ? undefined : handleReject}
                   />
                 </div>
               ))}

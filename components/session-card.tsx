@@ -10,7 +10,16 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, Users, Check, X } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+  Check,
+  X,
+  CheckCircle2,
+  UserCircle,
+} from "lucide-react";
 import { format } from "date-fns";
 
 interface SessionCardProps {
@@ -18,6 +27,7 @@ interface SessionCardProps {
   onJoinClick?: (sessionId: string) => void;
   onCancelClick?: (sessionId: string) => void;
   distance?: number;
+  currentUserId?: string | null;
 }
 
 export function SessionCard({
@@ -25,13 +35,57 @@ export function SessionCard({
   onJoinClick,
   onCancelClick,
   distance,
+  currentUserId,
 }: SessionCardProps) {
   const sessionDate = new Date(session.date);
   const participantCount =
     session.participants?.filter((p) => p.status === "approved").length || 0;
 
+  // Check if current user is the host of this session
+  const isMySession = currentUserId && session.hostId === currentUserId;
+
+  // Helper function to check if session has passed
+  const isSessionPast = (): boolean => {
+    const [hours, minutes] = session.endTime.split(":").map(Number);
+    const endDateTime = new Date(sessionDate);
+    endDateTime.setHours(hours, minutes, 0, 0);
+
+    const now = new Date();
+    return endDateTime < now;
+  };
+
+  const isPast = isSessionPast();
+
   const renderActionButton = () => {
     if (!onJoinClick) return null;
+
+    // If this is the user's own session, show "My Session" badge
+    if (isMySession) {
+      return (
+        <Button
+          disabled
+          variant="outline"
+          className="w-full mt-2 bg-primary/10 text-primary border-primary/30 cursor-default"
+        >
+          <UserCircle className="h-4 w-4 mr-2" />
+          My Session
+        </Button>
+      );
+    }
+
+    // If session is past, show completed button
+    if (isPast) {
+      return (
+        <Button
+          disabled
+          variant="outline"
+          className="w-full mt-2 bg-green-50 text-green-700 border-green-200 cursor-not-allowed"
+        >
+          <CheckCircle2 className="h-4 w-4 mr-2" />
+          Session Completed
+        </Button>
+      );
+    }
 
     if (session.participationStatus === "approved") {
       return (
@@ -85,14 +139,32 @@ export function SessionCard({
   };
 
   return (
-    <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-primary/20 hover:border-primary/40 group">
+    <Card
+      className={`hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-primary/20 hover:border-primary/40 group ${
+        isPast ? "opacity-75" : ""
+      }`}
+    >
       <div className="h-1 w-full bg-gradient-to-r from-primary via-accent to-primary/50 group-hover:from-primary group-hover:via-primary/80 group-hover:to-primary transition-all" />
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
-            <CardTitle className="text-balance text-primary group-hover:text-primary/80 transition-colors">
-              {session.subject}
-            </CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-balance text-primary group-hover:text-primary/80 transition-colors">
+                {session.subject}
+              </CardTitle>
+              {isMySession && (
+                <Badge className="bg-primary/20 text-primary border-primary/30">
+                  <UserCircle className="h-3 w-3 mr-1" />
+                  My Session
+                </Badge>
+              )}
+              {isPast && (
+                <Badge className="bg-green-500/20 text-green-700 border-green-500/30">
+                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                  Completed
+                </Badge>
+              )}
+            </div>
             <CardDescription className="mt-1">
               {session.description || "No description provided"}
             </CardDescription>
