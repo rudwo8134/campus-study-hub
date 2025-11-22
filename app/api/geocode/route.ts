@@ -11,14 +11,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "missing address" }, { status: 400 });
   }
 
-  // Try both server-side and client-side environment variable names
-  const key = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const key =
+    process.env.GOOGLE_MAPS_API_KEY ||
+    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   if (!key) {
     return NextResponse.json(
-      { 
+      {
         error: "missing api key",
-        message: "Please set GOOGLE_MAPS_API_KEY or NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in your environment variables"
+        message:
+          "Please set GOOGLE_MAPS_API_KEY or NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in your environment variables",
       },
       { status: 500 }
     );
@@ -30,7 +32,11 @@ export async function GET(req: NextRequest) {
 
   const data = await res.json();
 
-  if (data.status !== "OK" || !Array.isArray(data.results) || data.results.length === 0) {
+  if (
+    data.status !== "OK" ||
+    !Array.isArray(data.results) ||
+    data.results.length === 0
+  ) {
     return NextResponse.json(
       { found: false, status: data.status ?? "ZERO_RESULTS" },
       { status: 200 }
