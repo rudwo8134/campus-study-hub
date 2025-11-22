@@ -1,50 +1,60 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, SlidersHorizontal } from "lucide-react"
-import type { SessionFilters as Filters } from "@/lib/types"
-import type { RankingType } from "@/lib/ranking/ranking-factory"
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Search, SlidersHorizontal } from "lucide-react";
+import type { SessionFilters as Filters } from "@/lib/types";
+import type { RankingType } from "@/lib/ranking/ranking-factory";
 
 interface SessionFiltersProps {
-  onFilterChange: (filters: Filters, rankingType?: RankingType) => void
+  onFilterChange: (filters: Filters, rankingType?: RankingType) => void;
 }
 
 export function SessionFilters({ onFilterChange }: SessionFiltersProps) {
-  const [subject, setSubject] = useState("")
-  const [date, setDate] = useState("")
-  const [maxDistance, setMaxDistance] = useState("10")
-  const [rankingType, setRankingType] = useState<RankingType>("relevance")
-  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [subject, setSubject] = useState("");
+  const [date, setDate] = useState("");
+  const [maxDistance, setMaxDistance] = useState("10");
+  const [rankingType, setRankingType] = useState<RankingType>("relevance");
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const handleApplyFilters = () => {
-    const filters: Filters = {}
+    const filters: Filters = {};
 
-    if (subject) filters.subject = subject
-    if (date) filters.date = new Date(date)
-    if (maxDistance) filters.maxDistance = Number.parseFloat(maxDistance)
+    if (subject) filters.subject = subject;
+    if (date) filters.date = new Date(date);
+    if (maxDistance) filters.maxDistance = Number.parseFloat(maxDistance);
 
-    onFilterChange(filters, rankingType)
-  }
+    onFilterChange(filters, rankingType);
+  };
 
   const handleReset = () => {
-    setSubject("")
-    setDate("")
-    setMaxDistance("10")
-    setRankingType("relevance")
-    onFilterChange({}, "relevance")
-  }
+    setSubject("");
+    setDate("");
+    setMaxDistance("10");
+    setRankingType("relevance");
+    onFilterChange({}, "relevance");
+  };
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">Filters</CardTitle>
-          <Button variant="ghost" size="sm" onClick={() => setShowAdvanced(!showAdvanced)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+          >
             <SlidersHorizontal className="h-4 w-4 mr-2" />
             {showAdvanced ? "Hide" : "Show"} Advanced
           </Button>
@@ -69,7 +79,12 @@ export function SessionFilters({ onFilterChange }: SessionFiltersProps) {
         {/* Date Filter */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="date-filter">Date</Label>
-          <Input id="date-filter" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <Input
+            id="date-filter"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
         </div>
 
         {showAdvanced && (
@@ -89,7 +104,10 @@ export function SessionFilters({ onFilterChange }: SessionFiltersProps) {
 
             <div className="flex flex-col gap-2">
               <Label htmlFor="ranking-filter">Sort By</Label>
-              <Select value={rankingType} onValueChange={(value) => setRankingType(value as RankingType)}>
+              <Select
+                value={rankingType}
+                onValueChange={(value) => setRankingType(value as RankingType)}
+              >
                 <SelectTrigger id="ranking-filter">
                   <SelectValue />
                 </SelectTrigger>
@@ -114,5 +132,5 @@ export function SessionFilters({ onFilterChange }: SessionFiltersProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

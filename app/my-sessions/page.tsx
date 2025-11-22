@@ -15,15 +15,24 @@ export default function MySessionsPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    loadMySessions();
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          loadMySessions(data.user.id);
+        } else {
+          setIsLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch user:", err);
+        setIsLoading(false);
+      });
   }, []);
 
-  const loadMySessions = async () => {
+  const loadMySessions = async (userId: string) => {
     setIsLoading(true);
     try {
-      // Mock user ID (replace with actual auth)
-      const userId = "mock-user-id";
-
       const response = await fetch(`/api/sessions?hostId=${userId}`);
       if (!response.ok) throw new Error("Failed to load sessions");
 

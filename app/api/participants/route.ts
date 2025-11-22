@@ -42,3 +42,38 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { sessionId, userId } = body;
+
+    if (!sessionId || !userId) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const participantRepo = getParticipantRepository();
+    const existing = await participantRepo.findBySessionId(sessionId);
+    const participant = existing.find((p) => p.userId === userId);
+
+    if (!participant) {
+      return NextResponse.json(
+        { error: "Participant record not found" },
+        { status: 404 }
+      );
+    }
+
+    await participantRepo.delete(participant.id);
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("[v0] Error deleting participant request:", error);
+    return NextResponse.json(
+      { error: "Failed to delete join request" },
+      { status: 500 }
+    );
+  }
+}

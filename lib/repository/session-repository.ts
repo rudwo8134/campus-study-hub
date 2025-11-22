@@ -182,8 +182,41 @@ export class PostgreSQLSessionRepository implements ISessionRepository {
       values
     );
 
+    // Fetch participants for these sessions
+    const sessionIds = rows.map((row) => row.id);
+    let participantsBySession: Record<string, any[]> = {};
+
+    if (sessionIds.length > 0) {
+      const participantRows = await query<any>(
+        `SELECT * FROM session_participants WHERE session_id = ANY($1)`,
+        [sessionIds]
+      );
+
+      participantRows.forEach((row) => {
+        if (!participantsBySession[row.session_id]) {
+          participantsBySession[row.session_id] = [];
+        }
+        participantsBySession[row.session_id].push(row);
+      });
+    }
+
     let results = rows.map((row) => {
       const session = this.mapRowToSession(row);
+
+      // Attach participants
+      if (participantsBySession[session.id]) {
+        session.participants = participantsBySession[session.id].map((p) => ({
+          id: p.id,
+          sessionId: p.session_id,
+          userId: p.user_id,
+          status: p.status,
+          requestedAt: new Date(p.requested_at),
+          respondedAt: p.responded_at ? new Date(p.responded_at) : undefined,
+        }));
+      } else {
+        session.participants = [];
+      }
+
       const result: SessionSearchResult = {
         ...session,
         distance: row.distance || undefined,

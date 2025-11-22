@@ -10,14 +10,23 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogoutButton } from "@/components/logout-button";
 import { Mail, Calendar } from "lucide-react";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { getCurrentUser } from "@/lib/auth/simple-auth";
+import { redirect } from "next/navigation";
 
-export default function ProfilePage() {
-  const user = {
-    id: "mock-user-id",
-    name: "Test Student",
-    email: "test@university.edu",
-    createdAt: new Date().toISOString(),
-  };
+export default async function ProfilePage() {
+  const cookieStore = await cookies();
+  const userId = cookieStore.get("userId")?.value;
+
+  if (!userId) {
+    redirect("/login");
+  }
+
+  const user = await getCurrentUser(userId);
+
+  if (!user) {
+    redirect("/login");
+  }
 
   const initials = user.name
     .split(" ")

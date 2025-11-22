@@ -19,10 +19,24 @@ import { getSessionMediator } from "@/lib/mediator/session-mediator";
 export default function DiscoverPage() {
   const [sessions, setSessions] = useState<SessionSearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [currentFilters, setCurrentFilters] = useState<Filters>({});
+  const [currentRanking, setCurrentRanking] =
+    useState<RankingType>("relevance");
   const { toast } = useToast();
 
   useEffect(() => {
     loadSessions({}, "relevance");
+
+    // Fetch current user
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          setUserId(data.user.id);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch user:", err));
 
     const mediator = getSessionMediator();
     mediator.registerComponent("discover-page", (event, data) => {
@@ -40,6 +54,8 @@ export default function DiscoverPage() {
     filters: Filters,
     rankingType: RankingType = "relevance"
   ) => {
+    setCurrentFilters(filters);
+    setCurrentRanking(rankingType);
     setIsLoading(true);
     try {
       const response = await fetch("/api/sessions/search", {
@@ -65,10 +81,16 @@ export default function DiscoverPage() {
   };
 
   const handleJoinRequest = async (sessionId: string) => {
-    try {
-      // Mock user ID (replace with actual auth)
-      const userId = "mock-user-id";
+    if (!userId) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to join a session",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    try {
       const response = await fetch("/api/participants", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -82,6 +104,9 @@ export default function DiscoverPage() {
         description: "Your join request has been sent to the host",
       });
 
+      // Refresh sessions to show updated status
+      loadSessions(currentFilters, currentRanking);
+
       const mediator = getSessionMediator();
       mediator.notifyParticipantStatusChanged(sessionId, userId, "pending");
     } catch (error) {
@@ -89,6 +114,35 @@ export default function DiscoverPage() {
       toast({
         title: "Error",
         description: "Failed to send join request",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCancelRequest = async (sessionId: string) => {
+    if (!userId) return;
+
+    try {
+      const response = await fetch("/api/participants", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, userId }),
+      });
+
+      if (!response.ok) throw new Error("Failed to cancel request");
+
+      toast({
+        title: "Request Cancelled",
+        description: "Your join request has been cancelled",
+      });
+
+      // Refresh sessions to show updated status
+      loadSessions(currentFilters, currentRanking);
+    } catch (error) {
+      console.error("[v0] Error cancelling request:", error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel request",
         variant: "destructive",
       });
     }
@@ -162,6 +216,7 @@ export default function DiscoverPage() {
                 <SessionList
                   sessions={sessions}
                   onJoinClick={handleJoinRequest}
+                  onCancelClick={handleCancelRequest}
                 />
               )}
             </div>
