@@ -33,7 +33,6 @@ export async function POST(request: NextRequest) {
       description,
     } = body;
 
-    // Validate required fields
     if (
       !hostId ||
       !subject ||
@@ -52,7 +51,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate UUID format
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(hostId)) {
@@ -62,7 +60,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate capacity
     if (typeof capacity !== "number" || capacity <= 0) {
       return NextResponse.json(
         { error: "Capacity must be a positive number" },
@@ -70,8 +67,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Geocode address using internal API
-    const baseUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const baseUrl =
+      process.env.APP_URL ||
+      process.env.NEXT_PUBLIC_APP_URL ||
+      "http://localhost:3000";
     const geocodeResponse = await fetch(
       `${baseUrl}/api/geocode?address=${encodeURIComponent(address)}`
     );
@@ -119,7 +118,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[v0] Error creating session:", error);
 
-    // Check if it's a UUID validation error from PostgreSQL
     if (
       error &&
       typeof error === "object" &&
