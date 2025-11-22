@@ -149,24 +149,41 @@ export default function DiscoverPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 relative overflow-hidden">
+      {/* Decorative animated elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div className="absolute top-[5%] right-[10%] w-[25%] h-[25%] rounded-full bg-primary/10 blur-3xl animate-float" />
+        <div
+          className="absolute bottom-[15%] left-[5%] w-[30%] h-[30%] rounded-full bg-accent/15 blur-3xl animate-float"
+          style={{ animationDelay: "2s" }}
+        />
+      </div>
+
+      <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/80 animate-in fade-in slide-in-from-top duration-500">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 animate-in fade-in slide-in-from-left duration-700">
               <Link href="/">
-                <Button variant="ghost" size="icon">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-primary/10 transition-all"
+                >
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold">Discover Study Sessions</h1>
+                <h1 className="text-2xl font-bold text-primary">
+                  Discover Study Sessions
+                </h1>
                 <p className="text-sm text-muted-foreground">
                   Find and join study groups near you
                 </p>
               </div>
             </div>
-            <LogoutButton />
+            <div className="animate-in fade-in slide-in-from-right duration-700">
+              <LogoutButton />
+            </div>
           </div>
         </div>
       </header>
@@ -174,17 +191,19 @@ export default function DiscoverPage() {
       <main className="container mx-auto px-4 py-6">
         <div className="flex gap-6">
           {/* Left Sidebar - Filters (fixed width) */}
-          <aside className="w-80 flex-shrink-0">
-            <div className="sticky top-6">
+          <aside className="w-80 flex-shrink-0 animate-in fade-in slide-in-from-left duration-700">
+            <div className="sticky top-24">
               <SessionFilters onFilterChange={loadSessions} />
             </div>
           </aside>
 
           {/* Right Content - Map and List */}
-          <div className="flex-1 flex flex-col gap-6">
+          <div className="flex-1 flex flex-col gap-6 animate-in fade-in slide-in-from-right duration-700">
             {/* Map Section */}
-            <div className="w-full">
-              <h2 className="text-lg font-semibold mb-3">Map View</h2>
+            <div className="w-full animate-scale-in">
+              <h2 className="text-lg font-semibold mb-3 text-primary">
+                Map View
+              </h2>
               <SessionMap
                 sessions={sessions}
                 onSessionClick={handleJoinRequest}
@@ -193,15 +212,16 @@ export default function DiscoverPage() {
 
             {/* List Section */}
             <div className="w-full">
-              <h2 className="text-lg font-semibold mb-3">
+              <h2 className="text-lg font-semibold mb-3 text-primary">
                 Study Sessions ({sessions.length})
               </h2>
               {isLoading ? (
-                <div className="text-center py-12 bg-card rounded-lg border">
+                <div className="text-center py-12 bg-card rounded-lg border border-primary/20 animate-pulse">
+                  <div className="inline-block h-8 w-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
                   <p className="text-muted-foreground">Loading sessions...</p>
                 </div>
               ) : sessions.length === 0 ? (
-                <div className="text-center py-12 bg-card rounded-lg border">
+                <div className="text-center py-12 bg-card rounded-lg border border-primary/20 animate-in fade-in duration-500">
                   <p className="text-muted-foreground mb-4">
                     No study sessions found
                   </p>
@@ -209,7 +229,9 @@ export default function DiscoverPage() {
                     Try adjusting your filters or create a new session
                   </p>
                   <Link href="/create">
-                    <Button>Create First Session</Button>
+                    <Button className="bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
+                      Create First Session
+                    </Button>
                   </Link>
                 </div>
               ) : (

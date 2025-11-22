@@ -27,14 +27,19 @@ export function SessionList({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      {sessions.map((session) => (
-        <SessionCard
+      {sessions.map((session, index) => (
+        <div
           key={session.id}
-          session={session}
-          onJoinClick={onJoinClick}
-          onCancelClick={onCancelClick}
-          distance={session.distance}
-        />
+          className="animate-in fade-in slide-in-from-bottom duration-500"
+          style={{ animationDelay: `${index * 100}ms` }}
+        >
+          <SessionCard
+            session={session}
+            onJoinClick={onJoinClick}
+            onCancelClick={onCancelClick}
+            distance={session.distance}
+          />
+        </div>
       ))}
     </div>
   );
