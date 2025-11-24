@@ -1,312 +1,98 @@
 # Campus Study Hub 🎓
 
-A study group matching and management platform for campus students. Find and join study sessions based on subject, location, and time.
+**Course**: 4SA3 Software Architecture  
+**Student**: Kyoungjae Shin (400428169)
 
-**4SA3 Course Project**
+Hi there! 👋 I'm Kyoungjae, and this is **Campus Study Hub**, a project I built for my 4SA3 Software Architecture course at McMaster University.
 
-## ✨ Key Features
+The goal of this project is to solve a common problem for students: finding the right people to study with. I wanted to create a platform where you can easily discover study sessions happening around campus, filter them by subject or location, and join a group that fits your schedule.
 
-- **🔍 Session Discovery**: Filter by subject, tags, date, and location
-- **📍 Location-Based Search**: Explore nearby sessions with map and list views
-- **👥 Session Management**: Create study sessions and manage join requests
-- **✅ Approval System**: Hosts can approve or reject participation requests
-- **📅 Schedule Planning**: Filter sessions based on your availability
-- **🎯 Smart Ranking**: Sort sessions by distance, relevance, or time
+## ✨ What Can You Do Here?
 
-## 🛠️ Tech Stack
+I've built this platform with a few key features in mind to make study coordination smoother:
 
-### Frontend
+-   **Find Your Group**: You can search for sessions by subject, tags, or even check what's happening on a specific date.
+-   **See What's Nearby**: There's a map view so you can literally see where study groups are gathering around you.
+-   **Host a Session**: If you're planning to study, why not invite others? You can create a session and manage who joins.
+-   **Smart Sorting**: The app tries to be helpful by ranking sessions based on distance, relevance to your search, or start time.
 
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript
-- **UI**: React 19
-- **Styling**: Tailwind CSS 4
-- **Components**: shadcn/ui (Radix UI based)
-- **Forms**: React Hook Form + Zod
-- **Icons**: Lucide React
+## �️ How It's Built
 
-### Backend
+I chose a modern tech stack to ensure the app is fast, responsive, and maintainable.
 
-- **Runtime**: Node.js
-- **API**: Next.js API Routes
-- **Database**: PostgreSQL (✅ Implemented)
-- **Authentication**: Cookie-based session with bcrypt password hashing
-- **ORM**: Native pg library with custom query helpers
+### The Core
+-   **Next.js 15**: I used the latest App Router for robust routing and server-side rendering.
+-   **TypeScript**: For type safety and better developer experience.
+-   **PostgreSQL**: To reliably store all user and session data.
 
-### Architecture Patterns
+### Design & UI
+-   **Tailwind CSS 4**: For quick and flexible styling.
+-   **shadcn/ui**: I used this component library (based on Radix UI) to give the app a polished, accessible look without reinventing the wheel.
+-   **Lucide React**: For clean, consistent icons.
 
-- **Repository Pattern**: Data access abstraction
-- **Strategy Pattern**: Multiple ranking algorithms
-- **Factory Pattern**: Geocoding and Ranking strategy creation
-- **Mediator Pattern**: Session search and filtering coordination
-
-## 📁 Project Structure
-
-```
-campus-study-hub/
-├── app/                          # Next.js App Router
-│   ├── api/                      # API Routes
-│   │   ├── auth/                 # Authentication (login, signup, logout)
-│   │   ├── sessions/             # Session CRUD and search
-│   │   └── participants/         # Participant management
-│   ├── create/                   # Create session page
-│   ├── discover/                 # Discover sessions page
-│   ├── my-sessions/              # My sessions management
-│   ├── profile/                  # Profile page
-│   └── sessions/[id]/manage/     # Session management (approve participants)
-├── components/                   # React components
-│   ├── ui/                       # shadcn/ui components
-│   ├── auth-form.tsx             # Authentication form
-│   ├── create-session-form.tsx   # Session creation form
-│   ├── session-card.tsx          # Session card component
-│   ├── session-filters.tsx       # Filter UI
-│   └── session-map.tsx           # Map view
-├── lib/                          # Business logic
-│   ├── auth/                     # Authentication logic
-│   ├── geocoding/                # Location processing
-│   ├── ranking/                  # Ranking algorithms
-│   ├── repository/               # Data access layer
-│   ├── mediator/                 # Session search coordination
-│   └── types.ts                  # TypeScript type definitions
-├── scripts/                      # Database scripts
-│   ├── 001-create-schema.sql    # Schema creation
-│   └── 002-seed-data.sql        # Seed data
-└── public/                       # Static files
-```
+### Architecture
+Since this is a software architecture course, I implemented several design patterns to keep the code clean:
+-   **Repository Pattern**: To abstract away the database logic.
+-   **Strategy Pattern**: For the different ranking algorithms (Distance, Relevance, Time).
+-   **Factory Pattern**: To easily switch between geocoding providers or ranking strategies.
+-   **Mediator Pattern**: To coordinate complex interactions like search and filtering.
 
 ## 🚀 Getting Started
 
+If you want to run this project locally, here is how you can do it.
+
 ### Prerequisites
+You'll need **Node.js 18+** and **pnpm** (or npm) installed.
 
-- Node.js 18 or higher
-- pnpm (recommended) or npm
-- PostgreSQL (for production)
+### Installation Steps
 
-### Installation
+1.  **Clone the repo**:
+    ```bash
+    git clone <repository-url>
+    cd campus-study-hub
+    ```
 
-1. Clone the repository
+2.  **Install dependencies**:
+    ```bash
+    pnpm install
+    ```
 
-```bash
-git clone <repository-url>
-cd campus-study-hub
-```
+3.  **Configure Environment Variables**:
+    > **Important**: This project requires a `.env` file to connect to the database and other services. I have provided the necessary values in the **assignment submission comment**. Please create a `.env` file in the root directory and paste that content there.
 
-2. Install dependencies
+    Your `.env` file should look something like this:
+    ```bash
+    POSTGRES_URL=...
+    DATABASE_URL=...
+    # GOOGLE_MAPS_API_KEY=...
+    ```
 
-```bash
-pnpm install
-# or
-npm install
-```
+4.  **Set up the Database**:
+    ```bash
+    pnpm db:init
+    ```
 
-3. Set up environment variables
-
-```bash
-# Create .env.local file
-POSTGRES_URL=your_postgres_connection_string
-DATABASE_URL=your_postgres_connection_string
-# GOOGLE_MAPS_API_KEY=your_api_key_here (optional)
-```
-
-4. Initialize the database
-
-```bash
-pnpm db:init
-```
-
-5. Run the development server
-
-```bash
-pnpm dev
-# or
-npm run dev
-```
-
-6. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-### Database Management
-
-The project uses PostgreSQL for data persistence. The database is already configured and includes:
-
-- **Automatic Schema Setup**: Run `pnpm db:init` to create tables, indexes, and triggers
-- **Seed Data**: Sample users and study sessions for testing
-- **Migrations**: Add password field with `pnpm tsx scripts/add-password-field.ts`
-
-Database features:
-
-- UUID primary keys for all tables
-- Automatic timestamp updates via triggers
-- Foreign key constraints with cascading deletes
-- Indexed fields for optimized queries
+5.  **Run the App**:
+    ```bash
+    pnpm dev
+    ```
+    Then open [http://localhost:3000](http://localhost:3000) to see it in action!
 
 ## 📚 API Documentation
 
-### Swagger UI
+I've included interactive API documentation using Swagger UI. Once the server is running, you can visit `/api-docs` to test the endpoints for authentication, sessions, and participants.
 
-Interactive API documentation is available at `/api-docs` route.
+## 📄 Copyright & License
 
-#### Access the API Docs
+**Copyright © 2025 Kyoungjae Shin (400428169). All Rights Reserved.**
 
-1. Start the development server:
-
-```bash
-pnpm dev
-```
-
-2. Navigate to [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
-
-#### Features
-
-- **Interactive Testing**: Try out API endpoints directly from the documentation
-- **Request/Response Examples**: See example requests and responses for each endpoint
-- **Authentication**: Documentation includes cookie-based authentication details
-- **Auto-Discovery**: Server URL is automatically detected based on current environment
-
-#### API Endpoints
-
-**Authentication**
-
-- `POST /api/auth/signup` - Register a new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user
-- `POST /api/auth/logout` - Logout user
-
-**Sessions**
-
-- `GET /api/sessions` - Get upcoming sessions
-- `POST /api/sessions` - Create a new session
-- `GET /api/sessions/search` - Search sessions
-- `GET /api/sessions/{id}` - Get session details
-- `DELETE /api/sessions/{id}` - Delete a session
-
-**Participants**
-
-- `POST /api/participants` - Request to join a session
-- `GET /api/participants/{id}` - Get participant details
-- `PATCH /api/participants/{id}` - Update participant status
-- `GET /api/sessions/{id}/participants` - Get session participants
-
-#### Configuration
-
-Swagger configuration is located in `lib/swagger.ts`. You can customize:
-
-- API information (title, version, description)
-- Server URLs (development/production)
-- Endpoint definitions
-- Request/response schemas
-
-**Note**: The API documentation uses Swagger UI loaded from CDN via iframe to ensure compatibility with Next.js 15 and React 19.
-
-## 📝 Key Components & Libraries
-
-### UI Components
-
-- **Form Components**: Input, Select, Textarea, Checkbox, Radio
-- **Navigation**: Sidebar, Navigation Menu, Breadcrumb
-- **Feedback**: Toast, Alert, Dialog, Alert Dialog
-- **Data Display**: Card, Table, Badge, Avatar
-- **Layout**: Accordion, Tabs, Collapsible, Resizable
-
-### Business Logic
-
-#### Ranking Strategies
-
-- **DistanceRanking**: Sort by distance from user location
-- **RelevanceRanking**: Sort by search query relevance
-- **TimeRanking**: Sort by session start time
-
-#### Geocoding Providers
-
-- **GoogleMapsProvider**: Uses Google Maps API
-- **MockProvider**: Mock provider for development
-
-#### Repository Pattern
-
-- **SessionRepository**: Manages session data
-- **ParticipantRepository**: Manages participant data
-
-## 🔧 Build & Deploy
-
-### Production Build
-
-```bash
-pnpm build
-pnpm start
-```
-
-### Linting
-
-```bash
-pnpm lint
-```
-
-## 🎨 Design System
-
-- **CSS Framework**: Tailwind CSS 4
-- **Component Library**: shadcn/ui
-- **Design Tokens**: CSS Variables
-- **Theme**: Light/Dark mode support (next-themes)
-- **Typography**: Geist font
-
-## 📊 Data Models
-
-### User
-
-- id, email, name, createdAt
-
-### StudySession
-
-- id, hostId, subject, tags, date, startTime, endTime
-- capacity, location (address, lat, lng), description
-
-### SessionParticipant
-
-- id, sessionId, userId, status (pending/approved/rejected)
-- requestedAt, respondedAt
-
-## 🔐 Authentication
-
-Currently uses simple cookie-based session authentication.
-For production, consider:
-
-- NextAuth.js
-- Clerk
-- Auth0
-- Supabase Auth
-
-## 🗺️ Roadmap
-
-- [x] PostgreSQL database integration
-- [ ] Enhanced real-time map view (Google Maps/Mapbox)
-- [ ] Push notifications (for approval/rejection)
-- [ ] Chat functionality
-- [ ] Session reviews and ratings
-- [ ] Calendar integration
-- [ ] Mobile app (React Native)
-- [ ] Email verification for new users
-- [ ] OAuth integration (Google, GitHub)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is an academic project for 4SA3 course.
+This is an academic project submitted for the 4SA3 course. Please do not copy, distribute, or plagiarize this code without permission.
 
 ## 👨‍💻 Developer
 
-**Kyoungjae Shin**  
+**Kyoungjae Shin (400428169)**  
 McMaster University - 4SA3 Project
-
-## 📞 Contact
-
-If you have any questions or suggestions about this project, please create an issue.
 
 ---
 
-**Built with ❤️ using Next.js and TypeScript**
+If you have any questions or feedback, feel free to reach out. Thanks for checking out my project!

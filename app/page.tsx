@@ -18,7 +18,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 relative overflow-hidden">
-      {/* Decorative animated elements */}
+
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div className="absolute top-[10%] left-[5%] w-[30%] h-[30%] rounded-full bg-primary/10 blur-3xl animate-float" />
         <div
@@ -27,7 +27,7 @@ export default async function HomePage() {
         />
       </div>
 
-      {/* Header */}
+
       <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/80 animate-in fade-in slide-in-from-top duration-500">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -90,7 +90,7 @@ export default async function HomePage() {
         </div>
       </header>
 
-      {/* Hero Section */}
+
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto text-center mb-12 animate-in fade-in slide-in-from-bottom duration-700">
           <h2 className="text-4xl font-bold mb-4 text-balance bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
@@ -146,7 +146,7 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Features */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           <Card className="animate-in fade-in slide-in-from-left duration-500 hover:shadow-lg transition-all hover:-translate-y-1 border-primary/20 hover:border-primary/40">
             <CardHeader>

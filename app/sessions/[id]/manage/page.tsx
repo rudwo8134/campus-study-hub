@@ -27,7 +27,7 @@ export default function ManageSessionPage({
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  // Helper function to check if session has passed
+
   const isSessionPast = (session: StudySession): boolean => {
     const sessionDate = new Date(session.date);
     const [hours, minutes] = session.endTime.split(":").map(Number);
@@ -45,13 +45,13 @@ export default function ManageSessionPage({
   const loadSessionData = async () => {
     setIsLoading(true);
     try {
-      // Load session details
+
       const sessionResponse = await fetch(`/api/sessions/${resolvedParams.id}`);
       if (!sessionResponse.ok) throw new Error("Failed to load session");
       const sessionData = await sessionResponse.json();
       setSession(sessionData);
 
-      // Load participants
+
       const participantsResponse = await fetch(
         `/api/sessions/${resolvedParams.id}/participants`
       );
@@ -206,7 +206,7 @@ export default function ManageSessionPage({
           </CardContent>
         </Card>
 
-        {/* Pending Requests */}
+
         <div className="mb-6 animate-in fade-in slide-in-from-bottom duration-700 delay-100">
           <h2 className="text-lg font-semibold mb-4 text-primary">
             Pending Requests ({pendingRequests.length})
@@ -241,7 +241,7 @@ export default function ManageSessionPage({
           )}
         </div>
 
-        {/* Approved Participants */}
+
         <div className="mb-6 animate-in fade-in slide-in-from-bottom duration-700 delay-200">
           <h2 className="text-lg font-semibold mb-4 text-primary">
             Approved Participants ({approvedParticipants.length})
@@ -270,7 +270,7 @@ export default function ManageSessionPage({
           )}
         </div>
 
-        {/* Rejected Requests */}
+
         {rejectedParticipants.length > 0 && (
           <div className="animate-in fade-in slide-in-from-bottom duration-700 delay-300">
             <h2 className="text-lg font-semibold mb-4 text-primary">

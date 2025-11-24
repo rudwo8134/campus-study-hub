@@ -16,7 +16,7 @@ export async function GET(
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
     }
 
-    // Load participants for this session
+
     const participantRepo = getParticipantRepository();
     const participants = await participantRepo.findBySessionId(id);
 
@@ -55,7 +55,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
     }
 
-    // Check if user is the host
+
     if (session.hostId !== userId) {
       return NextResponse.json(
         { error: "Only the host can delete this session" },
@@ -63,14 +63,14 @@ export async function DELETE(
       );
     }
 
-    // Delete all participants first (cascade delete)
+
     const participantRepo = getParticipantRepository();
     const participants = await participantRepo.findBySessionId(id);
     for (const participant of participants) {
       await participantRepo.delete(participant.id);
     }
 
-    // Delete the session
+
     await sessionRepo.delete(id);
 
     return NextResponse.json({ success: true }, { status: 200 });

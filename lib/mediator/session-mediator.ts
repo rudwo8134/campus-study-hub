@@ -1,5 +1,5 @@
-// Mediator Pattern - Coordinates between components and reduces coupling
-// Handles notifications, map updates, and state synchronization
+
+
 
 export interface ISessionMediator {
   notifySessionCreated(sessionId: string): void
@@ -32,7 +32,7 @@ export class SessionMediator implements ISessionMediator {
     this.logEvent(event, data)
     this.broadcast(event, data)
 
-    // Trigger related updates
+
     this.broadcast("map:refresh", { reason: "new-session" })
     this.broadcast("list:refresh", { reason: "new-session" })
   }
@@ -44,7 +44,7 @@ export class SessionMediator implements ISessionMediator {
     this.logEvent(event, data)
     this.broadcast(event, data)
 
-    // Update map markers
+
     this.broadcast("map:update-marker", { sessionId })
   }
 
@@ -55,7 +55,7 @@ export class SessionMediator implements ISessionMediator {
     this.logEvent(event, data)
     this.broadcast(event, data)
 
-    // Update session capacity display
+
     this.broadcast("session:capacity-changed", { sessionId })
   }
 
@@ -66,7 +66,7 @@ export class SessionMediator implements ISessionMediator {
     this.logEvent(event, data)
     this.broadcast(event, data)
 
-    // Trigger list filtering based on visible area
+
     this.broadcast("list:filter-by-bounds", { bounds })
   }
 
@@ -85,7 +85,7 @@ export class SessionMediator implements ISessionMediator {
   private logEvent(event: string, data: any): void {
     this.eventLog.push({ event, data, timestamp: new Date() })
 
-    // Keep only last 100 events
+
     if (this.eventLog.length > 100) {
       this.eventLog.shift()
     }
@@ -96,7 +96,7 @@ export class SessionMediator implements ISessionMediator {
   }
 }
 
-// Singleton instance
+
 let mediatorInstance: SessionMediator | null = null
 
 export function getSessionMediator(): SessionMediator {

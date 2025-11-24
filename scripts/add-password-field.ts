@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import { Pool } from "pg";
 import * as path from "path";
 
-// Load environment variables from .env.local
+
 config({ path: path.join(__dirname, "..", ".env.local") });
 
 async function addPasswordField() {

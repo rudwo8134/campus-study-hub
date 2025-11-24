@@ -66,7 +66,7 @@ export default function MySessionsPage() {
         description: "The session has been successfully deleted",
       });
 
-      // Reload sessions
+
       fetch("/api/auth/me")
         .then((res) => res.json())
         .then((data) => {
@@ -88,7 +88,7 @@ export default function MySessionsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 relative overflow-hidden">
-      {/* Decorative animated elements */}
+
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div className="absolute top-[10%] right-[10%] w-[25%] h-[25%] rounded-full bg-primary/10 blur-3xl animate-float" />
         <div

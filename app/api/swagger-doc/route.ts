@@ -4,7 +4,7 @@ import { swaggerConfig } from "@/lib/swagger";
 export async function GET() {
   const spec = swaggerConfig.definition;
 
-  // Update server URLs
+
   const origin = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
   spec.servers = [
     {

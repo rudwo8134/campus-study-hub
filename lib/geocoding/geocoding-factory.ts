@@ -1,4 +1,4 @@
-// Factory Method Pattern - Creates appropriate geocoding provider
+
 import type { IGeocodingProvider } from "./geocoding-provider"
 import { GoogleMapsProvider } from "./google-maps-provider"
 import { MockGeocodingProvider } from "./mock-provider"
@@ -20,7 +20,7 @@ export class GeocodingFactory {
   }
 
   private static getDefaultProvider(): GeocodingProviderType {
-    // Use Google Maps if API key is available, otherwise use mock
+
     if (process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
       return "google-maps"
     }
@@ -28,7 +28,7 @@ export class GeocodingFactory {
   }
 }
 
-// Singleton instance
+
 let geocodingProvider: IGeocodingProvider | null = null
 
 export function getGeocodingProvider(): IGeocodingProvider {

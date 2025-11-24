@@ -1,4 +1,4 @@
-// Factory for creating ranking strategies
+
 import type { IRankingStrategy } from "./ranking-strategy"
 import { DistanceRankingStrategy } from "./distance-ranking"
 import { RelevanceRankingStrategy } from "./relevance-ranking"

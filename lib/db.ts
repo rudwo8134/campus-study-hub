@@ -1,6 +1,6 @@
 import { Pool, QueryResult } from "pg";
 
-// Create a connection pool
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || process.env.POSTGRES_URL,
   ssl:
@@ -9,12 +9,12 @@ const pool = new Pool({
       : false,
 });
 
-// Test connection on startup
+
 pool.on("error", (err) => {
   console.error("Unexpected error on idle client", err);
 });
 
-// Helper function to execute queries
+
 export async function query<T = any>(
   queryText: string,
   params: any[] = []
@@ -28,7 +28,7 @@ export async function query<T = any>(
   }
 }
 
-// Helper function to execute single row queries
+
 export async function queryOne<T = any>(
   queryText: string,
   params: any[] = []
@@ -37,5 +37,5 @@ export async function queryOne<T = any>(
   return rows.length > 0 ? rows[0] : null;
 }
 
-// Export pool for advanced usage
+
 export { pool };

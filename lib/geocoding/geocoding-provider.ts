@@ -1,5 +1,5 @@
-// Factory Method Pattern - Abstract geocoding provider interface
-// Allows switching between different geocoding services (Google Maps, OpenStreetMap, etc.)
+
+
 
 export interface GeocodingResult {
   address: string

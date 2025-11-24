@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const filters: SessionFilters = body.filters || body;
     const rankingType: RankingType = body.rankingType || "relevance";
 
-    // Get current user ID
+
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
 
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     const rankingStrategy = RankingFactory.createStrategy(rankingType);
     sessions = rankingStrategy.rank(sessions, filters);
 
-    // Add participation status if user is logged in
+
     if (userId) {
       sessions = sessions.map((session) => {
         const participant = session.participants?.find(

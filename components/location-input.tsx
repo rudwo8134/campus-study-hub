@@ -12,7 +12,7 @@ interface LocationInputProps {
   placeholder?: string;
 }
 
-// Declare global to track if Google Maps is loaded
+
 declare global {
   interface Window {
     googleMapsLoaded?: boolean;
@@ -30,7 +30,7 @@ export function LocationInput({
   const inputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
-  // Load Google Maps API
+
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -43,13 +43,13 @@ export function LocationInput({
       setIsGoogleMapsLoaded(true);
     };
 
-    // Check if Google Maps is already loaded
+
     if (window.google && window.google.maps) {
       setIsGoogleMapsLoaded(true);
       return;
     }
 
-    // Check if script is already being loaded
+
     if (window.googleMapsLoaded === undefined) {
       window.googleMapsLoaded = false;
       window.googleMapsCallbacks = [];
@@ -72,7 +72,7 @@ export function LocationInput({
       document.head.appendChild(script);
     }
 
-    // Register callback
+
     if (window.googleMapsCallbacks) {
       window.googleMapsCallbacks.push(onGoogleMapsLoaded);
     } else if (window.googleMapsLoaded) {
@@ -80,7 +80,7 @@ export function LocationInput({
     }
   }, []);
 
-  // Initialize autocomplete once Google Maps is loaded
+
   useEffect(() => {
     if (!isGoogleMapsLoaded || !inputRef.current || autocompleteRef.current) {
       return;
@@ -127,9 +127,9 @@ export function LocationInput({
     };
   }, [isGoogleMapsLoaded, onChange]);
 
-  // Fallback geocoding when Google Places is not available
+
   useEffect(() => {
-    if (isGoogleMapsLoaded) return; // Skip if Google Maps autocomplete is available
+    if (isGoogleMapsLoaded) return;
 
     const timer = setTimeout(() => {
       if (value.length > 3) {
@@ -138,7 +138,7 @@ export function LocationInput({
     }, 500);
 
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [value, isGoogleMapsLoaded]);
 
   const handleFallbackGeocode = async () => {

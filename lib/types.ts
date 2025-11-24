@@ -1,4 +1,4 @@
-// Core domain types for Campus Study Hub
+
 
 export interface User {
   id: string;

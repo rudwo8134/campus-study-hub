@@ -11,14 +11,14 @@ export async function GET(request: NextRequest) {
 
     let sessions;
     if (hostId) {
-      // Get sessions by host ID
+
       sessions = await sessionRepo.findByHostId(hostId);
     } else {
-      // Get all upcoming sessions
+
       sessions = await sessionRepo.findUpcoming();
     }
 
-    // Load participants for each session
+
     const { getParticipantRepository } = await import(
       "@/lib/repository/participant-repository"
     );

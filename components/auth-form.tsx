@@ -49,7 +49,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         throw new Error(data.error || "Authentication failed");
       }
 
-      // Redirect to discover page after successful auth
+
       router.push("/discover");
       router.refresh();
     } catch (err) {

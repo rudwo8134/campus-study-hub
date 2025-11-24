@@ -48,7 +48,7 @@ export function CreateSessionForm({ onSuccess }: CreateSessionFormProps) {
     }
   };
 
-  // Fetch current user on mount
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -124,7 +124,7 @@ export function CreateSessionForm({ onSuccess }: CreateSessionFormProps) {
         throw new Error(errorData.error || "Failed to create session");
       }
 
-      // Reset form
+
       setSubject("");
       setTags([]);
       setDate("");
@@ -135,10 +135,10 @@ export function CreateSessionForm({ onSuccess }: CreateSessionFormProps) {
       setGeocodedLocation(null);
       setDescription("");
 
-      // Call onSuccess callback if provided
+
       onSuccess?.();
 
-      // Redirect to discover page (map page)
+
       router.push("/discover");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -157,7 +157,7 @@ export function CreateSessionForm({ onSuccess }: CreateSessionFormProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          {/* Subject */}
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="subject">Subject</Label>
             <Input
@@ -169,7 +169,7 @@ export function CreateSessionForm({ onSuccess }: CreateSessionFormProps) {
             />
           </div>
 
-          {/* Tags */}
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="tags">Tags</Label>
             <div className="flex gap-2">
@@ -212,7 +212,7 @@ export function CreateSessionForm({ onSuccess }: CreateSessionFormProps) {
             )}
           </div>
 
-          {/* Date and Time */}
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="date">Date</Label>
@@ -246,7 +246,7 @@ export function CreateSessionForm({ onSuccess }: CreateSessionFormProps) {
             </div>
           </div>
 
-          {/* Capacity */}
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="capacity">Capacity</Label>
             <Input
@@ -263,7 +263,7 @@ export function CreateSessionForm({ onSuccess }: CreateSessionFormProps) {
             </p>
           </div>
 
-          {/* Location */}
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="address">Meeting Location</Label>
             <LocationInput
@@ -282,7 +282,7 @@ export function CreateSessionForm({ onSuccess }: CreateSessionFormProps) {
             )}
           </div>
 
-          {/* Description */}
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="description">Description (Optional)</Label>
             <Textarea

@@ -14,13 +14,13 @@ export async function POST(request: NextRequest) {
 
     const user = await signIn(email, password);
 
-    // Set user session cookie
+
     const response = NextResponse.json({ user });
     response.cookies.set("userId", user.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return response;

@@ -1,9 +1,9 @@
-// Mock geocoding provider for testing without API keys
+
 import { GeocodingProvider, type GeocodingResult } from "./geocoding-provider"
 
 export class MockGeocodingProvider extends GeocodingProvider {
   async geocode(address: string): Promise<GeocodingResult> {
-    // Simulate API delay
+
     await new Promise((resolve) => setTimeout(resolve, 100))
 
     return {

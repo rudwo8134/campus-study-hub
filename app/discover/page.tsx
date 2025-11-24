@@ -28,7 +28,7 @@ export default function DiscoverPage() {
   useEffect(() => {
     loadSessions({}, "relevance");
 
-    // Fetch current user
+
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => {
@@ -104,7 +104,7 @@ export default function DiscoverPage() {
         description: "Your join request has been sent to the host",
       });
 
-      // Refresh sessions to show updated status
+
       loadSessions(currentFilters, currentRanking);
 
       const mediator = getSessionMediator();
@@ -136,7 +136,7 @@ export default function DiscoverPage() {
         description: "Your join request has been cancelled",
       });
 
-      // Refresh sessions to show updated status
+
       loadSessions(currentFilters, currentRanking);
     } catch (error) {
       console.error("[v0] Error cancelling request:", error);
@@ -190,16 +190,16 @@ export default function DiscoverPage() {
 
       <main className="container mx-auto px-4 py-6">
         <div className="flex gap-6">
-          {/* Left Sidebar - Filters (fixed width) */}
+
           <aside className="w-80 flex-shrink-0 animate-in fade-in slide-in-from-left duration-700">
             <div className="sticky top-24">
               <SessionFilters onFilterChange={loadSessions} />
             </div>
           </aside>
 
-          {/* Right Content - Map and List */}
+
           <div className="flex-1 flex flex-col gap-6 animate-in fade-in slide-in-from-right duration-700">
-            {/* Map Section */}
+
             <div className="w-full animate-scale-in">
               <h2 className="text-lg font-semibold mb-3 text-primary">
                 Map View
@@ -210,7 +210,7 @@ export default function DiscoverPage() {
               />
             </div>
 
-            {/* List Section */}
+
             <div className="w-full">
               <h2 className="text-lg font-semibold mb-3 text-primary">
                 Study Sessions ({sessions.length})

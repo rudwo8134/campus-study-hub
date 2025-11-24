@@ -21,7 +21,7 @@ export function SessionMap({ sessions, onSessionClick }: SessionMapProps) {
       return;
     }
 
-    // Load Google Maps script
+
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
     script.async = true;
@@ -56,7 +56,7 @@ export function SessionMap({ sessions, onSessionClick }: SessionMapProps) {
       ],
     });
 
-    // Store map instance
+
     (mapRef.current as any).mapInstance = map;
     updateMarkers();
   };
@@ -67,14 +67,14 @@ export function SessionMap({ sessions, onSessionClick }: SessionMapProps) {
     const map = (mapRef.current as any).mapInstance;
     if (!map) return;
 
-    // Clear existing markers
+
     if ((mapRef.current as any).markers) {
       (mapRef.current as any).markers.forEach((marker: any) =>
         marker.setMap(null)
       );
     }
 
-    // Add new markers
+
     const markers = sessions.map((session) => {
       const marker = new window.google.maps.Marker({
         position: {
@@ -93,7 +93,7 @@ export function SessionMap({ sessions, onSessionClick }: SessionMapProps) {
     });
     (mapRef.current as any).markers = markers;
 
-    // Fit bounds to show all markers
+
     if (markers.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
       sessions.forEach((session) => {

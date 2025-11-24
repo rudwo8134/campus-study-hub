@@ -1,4 +1,4 @@
-// Time-based ranking strategy (soonest sessions first)
+
 import { RankingStrategy } from "./ranking-strategy"
 import type { SessionSearchResult, SessionFilters } from "../types"
 
@@ -15,20 +15,20 @@ export class TimeRankingStrategy extends RankingStrategy {
   private calculateScore(session: SessionSearchResult, filters: SessionFilters): number {
     let score = 100
 
-    // Time until session (sooner = higher score)
+
     const daysUntilSession = Math.floor((session.date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
 
     if (daysUntilSession <= 1) {
-      score += 50 // Today or tomorrow
+      score += 50
     } else if (daysUntilSession <= 3) {
-      score += 30 // Within 3 days
+      score += 30
     } else if (daysUntilSession <= 7) {
-      score += 15 // Within a week
+      score += 15
     } else {
-      score -= daysUntilSession // Penalty for far future
+      score -= daysUntilSession
     }
 
-    // Available capacity
+
     const participantCount = session.participants?.filter((p) => p.status === "approved").length || 0
     const availableSpots = session.capacity - participantCount
     if (availableSpots > 0) {

@@ -39,7 +39,7 @@ interface MySessionsListProps {
 }
 
 export function MySessionsList({ sessions, onDelete }: MySessionsListProps) {
-  // Helper function to check if session has passed
+
   const isSessionPast = (session: StudySession): boolean => {
     const sessionDate = new Date(session.date);
     const [hours, minutes] = session.endTime.split(":").map(Number);

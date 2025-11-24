@@ -1,4 +1,4 @@
-// Google Maps geocoding implementation
+
 import { GeocodingProvider, type GeocodingResult } from "./geocoding-provider"
 
 export class GoogleMapsProvider extends GeocodingProvider {
@@ -69,7 +69,7 @@ export class GoogleMapsProvider extends GeocodingProvider {
   }
 
   private mockGeocode(address: string): GeocodingResult {
-    // Mock geocoding for development
+
     return {
       address,
       latitude: 40.7128 + Math.random() * 0.01,

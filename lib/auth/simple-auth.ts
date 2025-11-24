@@ -1,12 +1,12 @@
-// Simple authentication system for Campus Study Hub
-// Uses PostgreSQL with bcrypt for password hashing
+
+
 
 import bcrypt from "bcryptjs";
 import { query, queryOne } from "../db";
 import type { User } from "../types";
 
 export async function signIn(email: string, password: string): Promise<User> {
-  // Basic email validation
+
   if (!email.includes("@")) {
     throw new Error("Invalid email address");
   }
@@ -37,7 +37,7 @@ export async function signUp(
   name: string,
   password: string
 ): Promise<User> {
-  // Basic email validation
+
   if (!email.includes("@")) {
     throw new Error("Invalid email address");
   }
@@ -51,7 +51,7 @@ export async function signUp(
     throw new Error("Account already exists. Please sign in instead.");
   }
 
-  // Hash password
+
   const passwordHash = await bcrypt.hash(password, 10);
 
   const user = await queryOne<any>(
@@ -92,5 +92,5 @@ export async function getCurrentUser(userId: string): Promise<User | null> {
 }
 
 export async function signOut(): Promise<void> {
-  // Clear session (implement with cookies/sessions)
+
 }

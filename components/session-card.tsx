@@ -41,10 +41,10 @@ export function SessionCard({
   const participantCount =
     session.participants?.filter((p) => p.status === "approved").length || 0;
 
-  // Check if current user is the host of this session
+
   const isMySession = currentUserId && session.hostId === currentUserId;
 
-  // Helper function to check if session has passed
+
   const isSessionPast = (): boolean => {
     const [hours, minutes] = session.endTime.split(":").map(Number);
     const endDateTime = new Date(sessionDate);
@@ -59,7 +59,7 @@ export function SessionCard({
   const renderActionButton = () => {
     if (!onJoinClick) return null;
 
-    // If this is the user's own session, show "My Session" badge
+
     if (isMySession) {
       return (
         <Button
@@ -73,7 +73,7 @@ export function SessionCard({
       );
     }
 
-    // If session is past, show completed button
+
     if (isPast) {
       return (
         <Button
@@ -192,7 +192,7 @@ export function SessionCard({
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-3">
-          {/* Date and Time */}
+
           <div className="flex items-center gap-2 text-sm text-muted-foreground group-hover:text-foreground transition-colors">
             <Calendar className="h-4 w-4 text-primary" />
             <span>{format(sessionDate, "EEEE, MMMM d, yyyy")}</span>
@@ -204,13 +204,13 @@ export function SessionCard({
             </span>
           </div>
 
-          {/* Location */}
+
           <div className="flex items-center gap-2 text-sm text-muted-foreground group-hover:text-foreground transition-colors">
             <MapPin className="h-4 w-4 text-primary" />
             <span className="text-pretty">{session.location.address}</span>
           </div>
 
-          {/* Capacity */}
+
           <div className="flex items-center gap-2 text-sm text-muted-foreground group-hover:text-foreground transition-colors">
             <Users className="h-4 w-4 text-primary" />
             <span>
@@ -218,7 +218,7 @@ export function SessionCard({
             </span>
           </div>
 
-          {/* Action Button */}
+
           {renderActionButton()}
         </div>
       </CardContent>
