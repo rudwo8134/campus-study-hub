@@ -82,10 +82,47 @@ You'll need **Node.js 18+** and **pnpm** (or npm) installed.
 
 I've included interactive API documentation using Swagger UI. Once the server is running, you can visit `/api-docs` to test the endpoints for authentication, sessions, and participants.
 
-## 📄 Copyright & License
+## 🌐 Production Deployment
 
-**Copyright © 2025 Kyoungjae Shin (400428169). All Rights Reserved.**
+### Database SSL Configuration
 
+If you encounter SSL connection errors in production (`"The server does not support SSL connections"`), you need to configure the SSL settings based on your database setup.
+
+**Option 1: Disable SSL (if your database doesn't support it)**
+
+Add this environment variable to your production deployment:
+```
+DATABASE_SSL=false
+```
+
+**Option 2: Enable SSL (if your database requires it)**
+
+Add this environment variable:
+```
+DATABASE_SSL=true
+```
+
+**For Vercel:**
+1. Go to your project settings
+2. Navigate to **Environment Variables**
+3. Add `DATABASE_SSL` with value `false` or `true`
+4. Redeploy your application
+
+The application will automatically detect the SSL configuration and connect appropriately.
+
+---
+
+## 📄 Additional Notes
+
+This project is part of my coursework for 4SA3 Software Architecture at McMaster University.
+
+## 📞 Contact
+
+**Kyoungjae Shin** (400428169)
+
+---
+
+Copyright © 2025 Kyoungjae Shin (400428169). All Rights Reserved.
 This is an academic project submitted for the 4SA3 course. Please do not copy, distribute, or plagiarize this code without permission.
 
 ## 👨‍💻 Developer
