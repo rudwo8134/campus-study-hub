@@ -42,9 +42,12 @@ export default async function HomePage() {
       <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/80 animate-in fade-in slide-in-from-top duration-500">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-primary animate-in fade-in slide-in-from-left duration-700">
-              Campus Study Hub
-            </h1>
+            <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left duration-700">
+              <img src="/logo.svg" alt="Campus Study Hub Logo" className="h-8 w-8" />
+              <h1 className="text-xl font-semibold text-primary">
+                Campus Study Hub
+              </h1>
+            </div>
             <nav className="flex gap-2 animate-in fade-in slide-in-from-right duration-700">
               {isLoggedIn ? (
                 <>

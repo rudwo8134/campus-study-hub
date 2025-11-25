@@ -177,6 +177,7 @@ export default function DiscoverPage() {
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
               </Link>
+              <img src="/logo.svg" alt="Campus Study Hub Logo" className="h-8 w-8" />
               <div>
                 <h1 className="text-2xl font-bold text-primary">
                   Discover Study Sessions

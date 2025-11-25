@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: "Campus Study Hub",
   description: "Find and create study groups on campus",
   generator: "v0.app",
+  icons: {
+    icon: "/icon.svg",
+  },
 }
 
 export default function RootLayout({
