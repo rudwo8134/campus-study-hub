@@ -11,7 +11,6 @@ interface SessionMapProps {
   focusedSessionId?: string | null;
 }
 
-// A cleaner, lighter map style (Silver/Grayscale with color accents)
 const MAP_STYLES = [
   {
     elementType: "geometry",
@@ -122,7 +121,6 @@ export function SessionMap({
       return;
     }
 
-    // Get user location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -156,7 +154,6 @@ export function SessionMap({
     }
   }, [sessions, userLocation]);
 
-  // Handle focused session change
   useEffect(() => {
     if (!focusedSessionId || !mapRef.current || !window.google) return;
 
@@ -188,7 +185,7 @@ export function SessionMap({
     if (!mapRef.current || !window.google) return;
 
     const map = new window.google.maps.Map(mapRef.current, {
-      center: userLocation || { lat: 43.2609, lng: -79.9192 }, // Default to McMaster University
+      center: userLocation || { lat: 43.2609, lng: -79.9192 },
       zoom: 15,
       styles: MAP_STYLES,
       disableDefaultUI: false,
@@ -208,7 +205,6 @@ export function SessionMap({
     const map = (mapRef.current as any).mapInstance;
     if (!map) return;
 
-    // Clear existing markers
     if ((mapRef.current as any).markers) {
       (mapRef.current as any).markers.forEach((marker: any) =>
         marker.setMap(null)
@@ -217,10 +213,9 @@ export function SessionMap({
 
     const markers: google.maps.Marker[] = [];
     const infoWindow = new window.google.maps.InfoWindow({
-      disableAutoPan: true, // Prevents map from moving when hover opens
+      disableAutoPan: true,
     });
 
-    // Add User Location Marker
     if (userLocation) {
       const userMarker = new window.google.maps.Marker({
         position: userLocation,
@@ -237,7 +232,6 @@ export function SessionMap({
         zIndex: 999,
       });
 
-      // Add pulse effect circle
       new window.google.maps.Marker({
         position: userLocation,
         map,
@@ -255,7 +249,6 @@ export function SessionMap({
       markers.push(userMarker);
     }
 
-    // Add Session Markers
     const sessionMarkers = sessions.map((session) => {
       const marker = new window.google.maps.Marker({
         position: {
@@ -265,7 +258,6 @@ export function SessionMap({
         map,
         title: session.subject,
         animation: window.google.maps.Animation.DROP,
-        // New Marker Shape: A modern rounded pin with a hole
         icon: {
           path: "M12 0C7.58 0 4 3.58 4 8c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z",
           fillColor: "#ef4444", // Red-500
@@ -297,7 +289,6 @@ export function SessionMap({
         infoWindow.open(map, marker);
       });
 
-      // Auto-close on hover exit
       marker.addListener("mouseout", () => {
         infoWindow.close();
       });
@@ -312,7 +303,6 @@ export function SessionMap({
     markers.push(...sessionMarkers);
     (mapRef.current as any).markers = markers;
 
-    // Fit bounds if we have sessions
     if (sessions.length > 0 && !focusedSessionId) {
       const bounds = new window.google.maps.LatLngBounds();
       if (userLocation) {
@@ -326,7 +316,6 @@ export function SessionMap({
       });
       map.fitBounds(bounds);
 
-      // Don't zoom in too much if points are close
       const listener = window.google.maps.event.addListener(map, "idle", () => {
         if (map.getZoom()! > 16) map.setZoom(16);
         window.google.maps.event.removeListener(listener);

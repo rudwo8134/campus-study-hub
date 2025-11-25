@@ -151,13 +151,11 @@ export default function DiscoverPage() {
 
   const handleSessionFocus = (sessionId: string) => {
     setFocusedSessionId(sessionId);
-    // Scroll to top smoothly to see the map if on mobile or small screen
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 relative overflow-hidden">
-      {/* Decorative animated elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div className="absolute top-[5%] right-[10%] w-[25%] h-[25%] rounded-full bg-primary/10 blur-3xl animate-float" />
         <div
