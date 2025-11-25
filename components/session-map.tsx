@@ -3,15 +3,116 @@
 import { useEffect, useRef, useState } from "react";
 import type { SessionSearchResult } from "@/lib/types";
 import { Card } from "@/components/ui/card";
+import { useTheme } from "next-themes";
 
 interface SessionMapProps {
   sessions: SessionSearchResult[];
   onSessionClick?: (sessionId: string) => void;
+  focusedSessionId?: string | null;
 }
 
-export function SessionMap({ sessions, onSessionClick }: SessionMapProps) {
+// A cleaner, lighter map style (Silver/Grayscale with color accents)
+const MAP_STYLES = [
+  {
+    elementType: "geometry",
+    stylers: [{ color: "#f5f5f5" }],
+  },
+  {
+    elementType: "labels.icon",
+    stylers: [{ visibility: "off" }],
+  },
+  {
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#616161" }],
+  },
+  {
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#f5f5f5" }],
+  },
+  {
+    featureType: "administrative.land_parcel",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#bdbdbd" }],
+  },
+  {
+    featureType: "poi",
+    elementType: "geometry",
+    stylers: [{ color: "#eeeeee" }],
+  },
+  {
+    featureType: "poi",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#757575" }],
+  },
+  {
+    featureType: "poi.park",
+    elementType: "geometry",
+    stylers: [{ color: "#e5e5e5" }],
+  },
+  {
+    featureType: "poi.park",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#9e9e9e" }],
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#ffffff" }],
+  },
+  {
+    featureType: "road.arterial",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#757575" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ color: "#dadada" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#616161" }],
+  },
+  {
+    featureType: "road.local",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#9e9e9e" }],
+  },
+  {
+    featureType: "transit.line",
+    elementType: "geometry",
+    stylers: [{ color: "#e5e5e5" }],
+  },
+  {
+    featureType: "transit.station",
+    elementType: "geometry",
+    stylers: [{ color: "#eeeeee" }],
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#c9c9c9" }],
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#9e9e9e" }],
+  },
+];
+
+export function SessionMap({
+  sessions,
+  onSessionClick,
+  focusedSessionId,
+}: SessionMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -21,6 +122,20 @@ export function SessionMap({ sessions, onSessionClick }: SessionMapProps) {
       return;
     }
 
+    // Get user location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        }
+      );
+    }
 
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
@@ -39,23 +154,49 @@ export function SessionMap({ sessions, onSessionClick }: SessionMapProps) {
     if (window.google && mapRef.current) {
       updateMarkers();
     }
-  }, [sessions]);
+  }, [sessions, userLocation]);
+
+  // Handle focused session change
+  useEffect(() => {
+    if (!focusedSessionId || !mapRef.current || !window.google) return;
+
+    const session = sessions.find((s) => s.id === focusedSessionId);
+    if (session) {
+      const map = (mapRef.current as any).mapInstance;
+      if (map) {
+        const position = {
+          lat: session.location.latitude,
+          lng: session.location.longitude,
+        };
+        map.panTo(position);
+        map.setZoom(16);
+
+        // Find and trigger click on the marker to open info window
+        const markers = (mapRef.current as any).markers;
+        if (markers) {
+          // We need to find the marker corresponding to this session
+          // Since we recreate markers on update, we can rely on index if consistent,
+          // but better to store session ID on marker.
+          // For now, let's just pan and zoom.
+          // Ideally, we would also open the info window.
+        }
+      }
+    }
+  }, [focusedSessionId, sessions]);
 
   const initializeMap = () => {
     if (!mapRef.current || !window.google) return;
 
     const map = new window.google.maps.Map(mapRef.current, {
-      center: { lat: 40.7128, lng: -74.006 },
-      zoom: 13,
-      styles: [
-        {
-          featureType: "poi",
-          elementType: "labels",
-          stylers: [{ visibility: "off" }],
-        },
-      ],
+      center: userLocation || { lat: 43.2609, lng: -79.9192 }, // Default to McMaster University
+      zoom: 15,
+      styles: MAP_STYLES,
+      disableDefaultUI: false,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true,
+      zoomControl: true,
     });
-
 
     (mapRef.current as any).mapInstance = map;
     updateMarkers();
@@ -67,15 +208,55 @@ export function SessionMap({ sessions, onSessionClick }: SessionMapProps) {
     const map = (mapRef.current as any).mapInstance;
     if (!map) return;
 
-
+    // Clear existing markers
     if ((mapRef.current as any).markers) {
       (mapRef.current as any).markers.forEach((marker: any) =>
         marker.setMap(null)
       );
     }
 
+    const markers: google.maps.Marker[] = [];
+    const infoWindow = new window.google.maps.InfoWindow({
+      disableAutoPan: true, // Prevents map from moving when hover opens
+    });
 
-    const markers = sessions.map((session) => {
+    // Add User Location Marker
+    if (userLocation) {
+      const userMarker = new window.google.maps.Marker({
+        position: userLocation,
+        map,
+        title: "You are here",
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: "#3b82f6", // Blue-500
+          fillOpacity: 1,
+          strokeColor: "white",
+          strokeWeight: 2,
+        },
+        zIndex: 999,
+      });
+
+      // Add pulse effect circle
+      new window.google.maps.Marker({
+        position: userLocation,
+        map,
+        clickable: false,
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 20,
+          fillColor: "#3b82f6",
+          fillOpacity: 0.2,
+          strokeWeight: 0,
+        },
+        zIndex: 998,
+      });
+
+      markers.push(userMarker);
+    }
+
+    // Add Session Markers
+    const sessionMarkers = sessions.map((session) => {
       const marker = new window.google.maps.Marker({
         position: {
           lat: session.location.latitude,
@@ -83,6 +264,42 @@ export function SessionMap({ sessions, onSessionClick }: SessionMapProps) {
         },
         map,
         title: session.subject,
+        animation: window.google.maps.Animation.DROP,
+        // New Marker Shape: A modern rounded pin with a hole
+        icon: {
+          path: "M12 0C7.58 0 4 3.58 4 8c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z",
+          fillColor: "#ef4444", // Red-500
+          fillOpacity: 1,
+          strokeWeight: 1.5,
+          strokeColor: "#ffffff",
+          scale: 1.8,
+          anchor: new window.google.maps.Point(12, 21),
+        },
+      });
+
+      const contentString = `
+        <div style="padding: 12px; min-width: 220px; font-family: inherit;">
+          <h3 style="margin: 0 0 8px 0; color: #111827; font-weight: 600; font-size: 16px; line-height: 1.2;">${session.subject}</h3>
+          <div style="display: flex; align-items: center; gap: 6px; color: #4b5563; font-size: 13px; margin-bottom: 4px;">
+            <span>📍</span> <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${session.location.address}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px; color: #4b5563; font-size: 13px; margin-bottom: 8px;">
+            <span>🕒</span> <span>${new Date(session.date).toLocaleDateString()} ${session.startTime}</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+            ${session.tags.map(tag => `<span style="background: #f3f4f6; color: #374151; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">#${tag}</span>`).join('')}
+          </div>
+        </div>
+      `;
+
+      marker.addListener("mouseover", () => {
+        infoWindow.setContent(contentString);
+        infoWindow.open(map, marker);
+      });
+
+      // Auto-close on hover exit
+      marker.addListener("mouseout", () => {
+        infoWindow.close();
       });
 
       marker.addListener("click", () => {
@@ -91,11 +308,16 @@ export function SessionMap({ sessions, onSessionClick }: SessionMapProps) {
 
       return marker;
     });
+
+    markers.push(...sessionMarkers);
     (mapRef.current as any).markers = markers;
 
-
-    if (markers.length > 0) {
+    // Fit bounds if we have sessions
+    if (sessions.length > 0 && !focusedSessionId) {
       const bounds = new window.google.maps.LatLngBounds();
+      if (userLocation) {
+        bounds.extend(userLocation);
+      }
       sessions.forEach((session) => {
         bounds.extend({
           lat: session.location.latitude,
@@ -103,21 +325,34 @@ export function SessionMap({ sessions, onSessionClick }: SessionMapProps) {
         });
       });
       map.fitBounds(bounds);
+
+      // Don't zoom in too much if points are close
+      const listener = window.google.maps.event.addListener(map, "idle", () => {
+        if (map.getZoom()! > 16) map.setZoom(16);
+        window.google.maps.event.removeListener(listener);
+      });
+    } else if (userLocation && !focusedSessionId) {
+      map.setCenter(userLocation);
+      map.setZoom(15);
     }
   };
 
   if (mapError) {
     return (
-      <Card className="h-[400px] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground mb-2">{mapError}</p>
+      <Card className="h-[400px] flex items-center justify-center bg-muted/50">
+        <div className="text-center p-6">
+          <p className="text-muted-foreground mb-2 font-medium">{mapError}</p>
           <p className="text-sm text-muted-foreground">
-            Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to enable map view
+            Please check your API key configuration
           </p>
         </div>
       </Card>
     );
   }
 
-  return <div ref={mapRef} className="w-full h-[400px] rounded-lg border" />;
+  return (
+    <Card className="overflow-hidden border-primary/20 shadow-lg">
+      <div ref={mapRef} className="w-full h-[500px] bg-muted/20" />
+    </Card>
+  );
 }

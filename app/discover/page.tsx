@@ -23,6 +23,7 @@ export default function DiscoverPage() {
   const [currentFilters, setCurrentFilters] = useState<Filters>({});
   const [currentRanking, setCurrentRanking] =
     useState<RankingType>("relevance");
+  const [focusedSessionId, setFocusedSessionId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -148,6 +149,12 @@ export default function DiscoverPage() {
     }
   };
 
+  const handleSessionFocus = (sessionId: string) => {
+    setFocusedSessionId(sessionId);
+    // Scroll to top smoothly to see the map if on mobile or small screen
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 relative overflow-hidden">
       {/* Decorative animated elements */}
@@ -207,6 +214,7 @@ export default function DiscoverPage() {
               <SessionMap
                 sessions={sessions}
                 onSessionClick={handleJoinRequest}
+                focusedSessionId={focusedSessionId}
               />
             </div>
 
@@ -239,6 +247,7 @@ export default function DiscoverPage() {
                   sessions={sessions}
                   onJoinClick={handleJoinRequest}
                   onCancelClick={handleCancelRequest}
+                  onSessionClick={handleSessionFocus}
                   currentUserId={userId}
                 />
               )}

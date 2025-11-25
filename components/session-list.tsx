@@ -7,6 +7,7 @@ interface SessionListProps {
   sessions: SessionSearchResult[];
   onJoinClick?: (sessionId: string) => void;
   onCancelClick?: (sessionId: string) => void;
+  onSessionClick?: (sessionId: string) => void;
   currentUserId?: string | null;
 }
 
@@ -14,6 +15,7 @@ export function SessionList({
   sessions,
   onJoinClick,
   onCancelClick,
+  onSessionClick,
   currentUserId,
 }: SessionListProps) {
   if (sessions.length === 0) {
@@ -39,6 +41,7 @@ export function SessionList({
             session={session}
             onJoinClick={onJoinClick}
             onCancelClick={onCancelClick}
+            onCardClick={() => onSessionClick?.(session.id)}
             distance={session.distance}
             currentUserId={currentUserId}
           />

@@ -26,6 +26,7 @@ interface SessionCardProps {
   session: SessionSearchResult;
   onJoinClick?: (sessionId: string) => void;
   onCancelClick?: (sessionId: string) => void;
+  onCardClick?: () => void;
   distance?: number;
   currentUserId?: string | null;
 }
@@ -34,6 +35,7 @@ export function SessionCard({
   session,
   onJoinClick,
   onCancelClick,
+  onCardClick,
   distance,
   currentUserId,
 }: SessionCardProps) {
@@ -103,7 +105,10 @@ export function SessionCard({
     if (session.participationStatus === "pending") {
       return (
         <Button
-          onClick={() => onCancelClick?.(session.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onCancelClick?.(session.id);
+          }}
           variant="outline"
           className="w-full mt-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
         >
@@ -129,7 +134,10 @@ export function SessionCard({
 
     return (
       <Button
-        onClick={() => onJoinClick(session.id)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onJoinClick(session.id);
+        }}
         className="w-full mt-2 bg-primary hover:bg-primary/90 transition-all hover:-translate-y-0.5 shadow-md hover:shadow-lg"
         disabled={isFull}
       >
@@ -140,9 +148,10 @@ export function SessionCard({
 
   return (
     <Card
+      onClick={onCardClick}
       className={`hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-primary/20 hover:border-primary/40 group ${
         isPast ? "opacity-75" : ""
-      }`}
+      } ${onCardClick ? "cursor-pointer" : ""}`}
     >
       <div className="h-1 w-full bg-gradient-to-r from-primary via-accent to-primary/50 group-hover:from-primary group-hover:via-primary/80 group-hover:to-primary transition-all" />
       <CardHeader>
