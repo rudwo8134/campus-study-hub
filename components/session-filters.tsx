@@ -46,52 +46,55 @@ export function SessionFilters({ onFilterChange }: SessionFiltersProps) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Filters</CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-          >
-            <SlidersHorizontal className="h-4 w-4 mr-2" />
-            {showAdvanced ? "Hide" : "Show"} Advanced
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        {/* Subject Search */}
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="subject-filter">Subject</Label>
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
+          <SlidersHorizontal className="h-5 w-5" />
+          Filters
+        </h3>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="hover:bg-primary/10 transition-all hover:scale-105 active:scale-95"
+        >
+          {showAdvanced ? "Hide" : "Show"} Advanced
+        </Button>
+      </div>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2 group">
+          <Label htmlFor="subject-filter" className="text-sm font-medium group-hover:text-primary transition-colors">Subject</Label>
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
             <Input
               id="subject-filter"
               placeholder="Search by subject..."
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="pl-9"
+              className="pl-9 transition-all focus:ring-2 focus:ring-primary/20 hover:border-primary/40"
             />
           </div>
         </div>
 
-        {/* Date Filter */}
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="date-filter">Date</Label>
+        <div className="flex flex-col gap-2 group">
+          <Label htmlFor="date-filter" className="text-sm font-medium group-hover:text-primary transition-colors">Date</Label>
           <Input
             id="date-filter"
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
+            className="transition-all focus:ring-2 focus:ring-primary/20 hover:border-primary/40"
           />
         </div>
 
-        {showAdvanced && (
-          <>
-            {/* Distance Filter */}
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="distance-filter">Max Distance (km)</Label>
+        <div 
+          className={`overflow-hidden transition-all duration-500 ease-in-out ${
+            showAdvanced ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="flex flex-col gap-4 pt-2">
+            <div className="flex flex-col gap-2 group">
+              <Label htmlFor="distance-filter" className="text-sm font-medium group-hover:text-primary transition-colors">Max Distance (km)</Label>
               <Input
                 id="distance-filter"
                 type="number"
@@ -99,16 +102,17 @@ export function SessionFilters({ onFilterChange }: SessionFiltersProps) {
                 max="50"
                 value={maxDistance}
                 onChange={(e) => setMaxDistance(e.target.value)}
+                className="transition-all focus:ring-2 focus:ring-primary/20 hover:border-primary/40"
               />
             </div>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="ranking-filter">Sort By</Label>
+            <div className="flex flex-col gap-2 group">
+              <Label htmlFor="ranking-filter" className="text-sm font-medium group-hover:text-primary transition-colors">Sort By</Label>
               <Select
                 value={rankingType}
                 onValueChange={(value) => setRankingType(value as RankingType)}
               >
-                <SelectTrigger id="ranking-filter">
+                <SelectTrigger id="ranking-filter" className="transition-all focus:ring-2 focus:ring-primary/20 hover:border-primary/40">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -118,19 +122,25 @@ export function SessionFilters({ onFilterChange }: SessionFiltersProps) {
                 </SelectContent>
               </Select>
             </div>
-          </>
-        )}
+          </div>
+        </div>
 
-        {/* Action Buttons */}
         <div className="flex gap-2 mt-2">
-          <Button onClick={handleApplyFilters} className="flex-1">
+          <Button 
+            onClick={handleApplyFilters} 
+            className="flex-1 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 active:translate-y-0"
+          >
             Apply Filters
           </Button>
-          <Button onClick={handleReset} variant="outline">
+          <Button 
+            onClick={handleReset} 
+            variant="outline"
+            className="transition-all hover:bg-primary/5 hover:border-primary/40"
+          >
             Reset
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

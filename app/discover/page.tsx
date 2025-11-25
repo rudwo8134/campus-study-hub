@@ -29,7 +29,6 @@ export default function DiscoverPage() {
   useEffect(() => {
     loadSessions({}, "relevance");
 
-
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => {
@@ -105,7 +104,6 @@ export default function DiscoverPage() {
         description: "Your join request has been sent to the host",
       });
 
-
       loadSessions(currentFilters, currentRanking);
 
       const mediator = getSessionMediator();
@@ -137,7 +135,6 @@ export default function DiscoverPage() {
         description: "Your join request has been cancelled",
       });
 
-
       loadSessions(currentFilters, currentRanking);
     } catch (error) {
       console.error("[v0] Error cancelling request:", error);
@@ -155,16 +152,24 @@ export default function DiscoverPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div className="absolute top-[5%] right-[10%] w-[25%] h-[25%] rounded-full bg-primary/10 blur-3xl animate-float" />
         <div
           className="absolute bottom-[15%] left-[5%] w-[30%] h-[30%] rounded-full bg-accent/15 blur-3xl animate-float"
           style={{ animationDelay: "2s" }}
         />
+        <div
+          className="absolute top-[40%] left-[15%] w-[20%] h-[20%] rounded-full bg-blue-400/10 blur-3xl animate-float"
+          style={{ animationDelay: "4s" }}
+        />
+        <div
+          className="absolute bottom-[30%] right-[20%] w-[25%] h-[25%] rounded-full bg-purple-400/10 blur-3xl animate-float"
+          style={{ animationDelay: "6s" }}
+        />
       </div>
 
-      <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/80 animate-in fade-in slide-in-from-top duration-500">
+      <header className="border-b border-border/40 backdrop-blur-xl sticky top-0 z-50 bg-background/70 shadow-lg shadow-primary/5 animate-in fade-in slide-in-from-top duration-500">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 animate-in fade-in slide-in-from-left duration-700">
@@ -172,14 +177,18 @@ export default function DiscoverPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="hover:bg-primary/10 transition-all"
+                  className="hover:bg-primary/10 transition-all hover:scale-110 active:scale-95"
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
               </Link>
-              <img src="/logo.svg" alt="Campus Study Hub Logo" className="h-8 w-8" />
+              <img 
+                src="/logo.svg" 
+                alt="Campus Study Hub Logo" 
+                className="h-8 w-8 animate-in zoom-in duration-500" 
+              />
               <div>
-                <h1 className="text-2xl font-bold text-primary">
+                <h1 className="text-2xl font-bold text-primary bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                   Discover Study Sessions
                 </h1>
                 <p className="text-sm text-muted-foreground">
@@ -196,47 +205,67 @@ export default function DiscoverPage() {
 
       <main className="container mx-auto px-4 py-6">
         <div className="flex gap-6">
-
           <aside className="w-80 flex-shrink-0 animate-in fade-in slide-in-from-left duration-700">
             <div className="sticky top-24">
-              <SessionFilters onFilterChange={loadSessions} />
+              <div className="bg-card/50 backdrop-blur-md border border-primary/20 rounded-xl shadow-lg shadow-primary/5 p-6 transition-all hover:shadow-xl hover:shadow-primary/10 hover:border-primary/30">
+                <SessionFilters onFilterChange={loadSessions} />
+              </div>
             </div>
           </aside>
 
-
           <div className="flex-1 flex flex-col gap-6 animate-in fade-in slide-in-from-right duration-700">
-
-            <div className="w-full animate-scale-in">
-              <h2 className="text-lg font-semibold mb-3 text-primary">
-                Map View
-              </h2>
-              <SessionMap
-                sessions={sessions}
-                onSessionClick={handleJoinRequest}
-                focusedSessionId={focusedSessionId}
-              />
+            <div className="w-full animate-in zoom-in-95 duration-500 delay-100">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
+                  <span className="inline-block w-1 h-6 bg-primary rounded-full animate-pulse" />
+                  Map View
+                </h2>
+              </div>
+              <div className={`transition-all duration-300 ${focusedSessionId ? 'ring-2 ring-primary/50 ring-offset-2 ring-offset-background' : ''}`}>
+                <SessionMap
+                  sessions={sessions}
+                  onSessionClick={handleJoinRequest}
+                  focusedSessionId={focusedSessionId}
+                />
+              </div>
             </div>
 
-
-            <div className="w-full">
-              <h2 className="text-lg font-semibold mb-3 text-primary">
-                Study Sessions ({sessions.length})
-              </h2>
+            <div className="w-full animate-in fade-in-up duration-500 delay-200">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
+                  <span className="inline-block w-1 h-6 bg-primary rounded-full animate-pulse" />
+                  Study Sessions ({sessions.length})
+                </h2>
+              </div>
               {isLoading ? (
-                <div className="text-center py-12 bg-card rounded-lg border border-primary/20 animate-pulse">
-                  <div className="inline-block h-8 w-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
-                  <p className="text-muted-foreground">Loading sessions...</p>
+                <div className="text-center py-16 bg-card/50 backdrop-blur-sm rounded-2xl border border-primary/20 shadow-lg">
+                  <div className="relative inline-block">
+                    <div className="h-12 w-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+                    <div className="absolute inset-0 h-12 w-12 border-4 border-transparent border-t-primary/50 rounded-full animate-spin mb-4" style={{ animationDuration: '0.75s', animationDirection: 'reverse' }}></div>
+                  </div>
+                  <p className="text-muted-foreground font-medium">Discovering sessions...</p>
+                  <p className="text-sm text-muted-foreground/70 mt-2">Finding the perfect study groups for you</p>
                 </div>
               ) : sessions.length === 0 ? (
-                <div className="text-center py-12 bg-card rounded-lg border border-primary/20 animate-in fade-in duration-500">
-                  <p className="text-muted-foreground mb-4">
+                <div className="text-center py-16 bg-gradient-to-br from-card/50 to-card/30 backdrop-blur-sm rounded-2xl border border-primary/20 shadow-lg animate-in zoom-in duration-500">
+                  <div className="mb-6 relative">
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 backdrop-blur-sm">
+                      <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="text-lg font-semibold text-foreground mb-2">
                     No study sessions found
                   </p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Try adjusting your filters or create a new session
+                  <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+                    Try adjusting your filters or be the first to create a session
                   </p>
                   <Link href="/create">
-                    <Button className="bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
+                    <Button className="bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 hover:scale-105 active:scale-95">
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
                       Create First Session
                     </Button>
                   </Link>

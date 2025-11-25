@@ -30,12 +30,14 @@ export function SessionList({
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {sessions.map((session, index) => (
         <div
           key={session.id}
-          className="animate-in fade-in slide-in-from-bottom duration-500"
-          style={{ animationDelay: `${index * 100}ms` }}
+          className="animate-in fade-in-up duration-500"
+          style={{ 
+            animationDelay: `${Math.min(index * 80, 400)}ms`
+          }}
         >
           <SessionCard
             session={session}
