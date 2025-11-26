@@ -26,8 +26,59 @@ export const swaggerConfig = {
       { name: "Sessions", description: "Study session management" },
       { name: "Participants", description: "Session participant management" },
       { name: "Geocoding", description: "Address geocoding and location services" },
+      { name: "Development", description: "Development and testing endpoints" },
     ],
     paths: {
+      "/api/seed": {
+        post: {
+          tags: ["Development"],
+          summary: "Seed database with random sessions",
+          description: "Generate random study sessions for testing purposes (Toronto/Mississauga area)",
+          parameters: [
+            {
+              name: "count",
+              in: "query",
+              description: "Number of sessions to generate (default: 10)",
+              required: false,
+              schema: { type: "integer", default: 10 },
+            },
+          ],
+          responses: {
+            "200": {
+              description: "Sessions created successfully",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      message: { type: "string" },
+                      sessions: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          properties: {
+                            id: { type: "string" },
+                            subject: { type: "string" },
+                            location: {
+                              type: "object",
+                              properties: {
+                                address: { type: "string" },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            "500": {
+              description: "Internal server error",
+            },
+          },
+        },
+      },
       "/api/auth/signup": {
         post: {
           tags: ["Authentication"],

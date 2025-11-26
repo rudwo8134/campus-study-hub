@@ -102,6 +102,12 @@ Add this environment variable:
 DATABASE_SSL=true
 ```
 
+** Test Credentials you can use:**
+```
+ID: admin@google.com
+Password: Baker#1234
+```
+
 **For Vercel:**
 1. Go to your project settings
 2. Navigate to **Environment Variables**

@@ -17,12 +17,12 @@ export class SessionMediator implements ISessionMediator {
 
   registerComponent(name: string, callback: ComponentCallback): void {
     this.components.set(name, callback)
-    console.log(`[v0] Mediator: Registered component "${name}"`)
+
   }
 
   unregisterComponent(name: string): void {
     this.components.delete(name)
-    console.log(`[v0] Mediator: Unregistered component "${name}"`)
+
   }
 
   notifySessionCreated(sessionId: string): void {
@@ -71,7 +71,7 @@ export class SessionMediator implements ISessionMediator {
   }
 
   private broadcast(event: string, data: any): void {
-    console.log(`[v0] Mediator: Broadcasting "${event}"`, data)
+
 
     this.components.forEach((callback, name) => {
       try {
