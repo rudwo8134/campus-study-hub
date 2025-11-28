@@ -202,7 +202,7 @@ export function CreateSessionForm({ onSuccess }: CreateSessionFormProps) {
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
-                      className="ml-1 hover:text-destructive"
+                      className="ml-1 hover:text-destructive cursor-pointer"
                     >
                       <X className="h-3 w-3" />
                     </button>
